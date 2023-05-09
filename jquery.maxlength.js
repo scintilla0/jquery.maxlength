@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.5.3 - 2023-05-08
+ * jquery.maxlength.js - version 1.5.4 - 2023-05-10
  * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
@@ -21,17 +21,17 @@ let NumberUtil;
 (function() {
 	const DOT_KEY = [110, 190], MINUS_KEY = [109, 189], COMMON_KEY = {V: 86, X: 88};
 	const NUMBER_KEY = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105];
-	const FUNCTION_KEY = {F5: 116, esc: 27, backspace: 8, del: 46, tab: 9, enter: 13, enterSub: 108,
-			pageUp: 33, pageDown: 34, end: 35, home: 36, left: 37, right: 38, up: 39, down: 40};
-	const KEY_TYPE = {NONE: 0, DOT: 1, MINUS: 2, NUMBER: 3, FUNCTION: 4};
-	const DEFAULT_CANCEL_LENGTH = {integral: 9};
+	const FUNCTION_KEY = {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
+			PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40};
+	const KEY_TYPE = {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4};
 	const CORE = {VALID_CHARACTER: '-.0123456789', MINUS: '-', DOT: '.', ZERO: '0', COMMA: ',', EMPTY: '',
 			INTEGRAL: "integral", FRACTIONAL: "fractional", ALLOW_MINUS: "minus",
 			DEFAULT_ID: '_max_length_no_', MAX_LENGTH: "data-max-length", INIT_FRESH: "data-disable-init-refresh",
-			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma",SMART_MINUS: "data-disable-smart-minus",
+			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma", SMART_MINUS: "data-disable-smart-minus",
 			HIGHLIGHT_MINUS: "data-enable-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align", SUM: "data-sum",
 			HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
 	const DEFAULT_CSS = {HORIZONTAL_ALIGN: 'right', MINUS_COLOR: '#FF0000'};
+	const DEFAULT_CANCEL_LENGTH = {integral: 9};
 	const HORIZONTAL_ALIGN_OPTION = ['left', 'center', 'right', 'inherit'];
 	const CommonUtil = _CommonUtil();
 	const NumberUtil_ = _NumberUtil();
@@ -323,7 +323,7 @@ let NumberUtil;
 		if (keyType === KEY_TYPE.FUNCTION) {
 			if (selectionStart === 0 && selectionEnd === value.length) {
 				return true;
-			} else if (keyCode === FUNCTION_KEY.backspace) {
+			} else if (keyCode === FUNCTION_KEY.BACKSPACE) {
 				if (selectionStart !== selectionEnd) {
 					return isSelectOperationValid(dom, maxLength);
 				} else if (value.includes(CORE.DOT) && cursorPos === dotPos + 1 && valueSep[0].length + valueSep[1].length > maxLength[CORE.INTEGRAL]) {
@@ -331,7 +331,7 @@ let NumberUtil;
 				} else {
 					return true;
 				}
-			} else if (keyCode === FUNCTION_KEY.del) {
+			} else if (keyCode === FUNCTION_KEY.DEL) {
 				if (selectionStart !== selectionEnd) {
 					return isSelectOperationValid(dom, maxLength);
 				} else if (value.includes(CORE.DOT) && cursorPos === dotPos && valueSep[0].length + valueSep[1].length > maxLength[CORE.INTEGRAL]) {

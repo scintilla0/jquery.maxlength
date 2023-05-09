@@ -5,6 +5,9 @@ A plugin for dynamic decimal max length auto-configuration.
 
 ### Change log
 
+#### 1.5.4 (2023-05-10)
+*	Optimize for min.js.
+
 #### 1.5.3 (2023-05-08)
 *	Smart minus unable to trigger change event fixed.
 
