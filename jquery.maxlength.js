@@ -242,16 +242,16 @@ let NumberUtil;
 		if (keyType === KEY_TYPE.MINUS) {
 			if (!CommonUtil.exists(disableSmartMinus)) {
 				if (CommonUtil.exists(maxLength[CORE.ALLOW_MINUS])) {
-                    let newValue = value.includes(CORE.MINUS) ? value.substring(1) : CORE.MINUS + value;
+					let newValue = value.includes(CORE.MINUS) ? value.substring(1) : CORE.MINUS + value;
 					setTimeout(() => {
-                        dom.value = newValue;
-                        let afterCursorPos = cursorPos + (value.includes(CORE.MINUS) ? -1 : 1);
+						dom.value = newValue;
+						let afterCursorPos = cursorPos + (value.includes(CORE.MINUS) ? -1 : 1);
 						if (cursorPos === 0 && value.includes(CORE.MINUS)) {
 							afterCursorPos = 0;
 						}
 						dom.selectionEnd = afterCursorPos;
 					});
-                    return value !== newValue;
+					return value !== newValue;
 				}
 				return false;
 			} else {
