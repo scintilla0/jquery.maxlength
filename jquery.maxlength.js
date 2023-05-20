@@ -546,7 +546,7 @@ let NumberUtil;
 		}
 
 		/* private */ function coreQuotient(dividend, divisor) {
-			let decimalPlaceMultiplicator = Math.pow(10, getDecimalPlace(dividend) + getDecimalPlace(divisor));
+			let decimalPlaceMultiplicator = Math.pow(10, getDecimalPlace(dividend) - getDecimalPlace(divisor));
 			return (removeDecimalPoint(dividend) / removeDecimalPoint(divisor)) / decimalPlaceMultiplicator;
 		}
 
