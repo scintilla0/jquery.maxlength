@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.5.4 - 2023-05-10
+ * jquery.maxlength.js - version 1.5.5 - 2023-05-20
  * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
