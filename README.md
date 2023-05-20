@@ -12,6 +12,9 @@ https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.
 
 ### Change log
 
+#### 1.5.6 (2023-05-21)
+*	Remove unused exports of the internal util.
+
 #### 1.5.5 (2023-05-20)
 *	NumberUtil().quotient() miscalculation fixed.
 
