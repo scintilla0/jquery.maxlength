@@ -3,10 +3,10 @@
 A plugin for dynamic decimal max length auto-configuration.
 
 CDN URL:
-https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.js
+`https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.js`
 
 CDN URL(min.js):
-https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.min.js
+`https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.min.js`
 
 ### [Demo](https://codepen.io/scintilla_0/full/MWPQJWv)
 
