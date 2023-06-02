@@ -15,7 +15,7 @@
  * Add the attribute [data-enable-highlight-minus="$hex"] to enable highlighting of negative values in either default red or the assigned hexadecimal color.
  * Add the attribute [data-horizontal-align="$align"] to customize text align position.
  * Add the attribute [data-sum="$selector"] to enable quick sum calculation on DOM elements matched by the jQuery selector, e.g. [data-sum="input.score"].
- * NumberUtil is an open decimal calculating utility for use.
+ * $.NumberUtil is an extended jQuery calculating utility for use.
  */
 (function() {
 	const DOT_KEY = [110, 190], MINUS_KEY = [109, 189], COMMON_KEY = {V: 86, X: 88};
