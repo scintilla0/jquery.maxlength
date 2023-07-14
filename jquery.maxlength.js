@@ -1,6 +1,7 @@
 /*!
- * jquery.maxlength.js - version 1.5.7 - 2023-06-02
+ * jquery.maxlength.js - version 1.5.8 - 2023-07-14
  * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
+ * Contributors: Squibler
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
  *
@@ -17,7 +18,7 @@
  * Add the attribute [data-sum="$selector"] to enable quick sum calculation on DOM elements matched by the jQuery selector, e.g. [data-sum="input.score"].
  * $.NumberUtil is an extended jQuery calculating utility for use.
  */
-(function() {
+(function($) {
 	const DOT_KEY = [110, 190], MINUS_KEY = [109, 189], COMMON_KEY = {V: 86, X: 88};
 	const NUMBER_KEY = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105];
 	const FUNCTION_KEY = {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
@@ -727,4 +728,4 @@
 		};
 	}
 
-}) ();
+}) (jQuery);

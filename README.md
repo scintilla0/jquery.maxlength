@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.5.8 (2023-07-14)
+*	Add support for jQuery's no Conflict mode. (Contributor: [Squibler](https://github.com/Squibler))
+
 #### 1.5.7 (2023-06-02)
 *	Change NumberUtil() to an extended object of jQuery: $.NumberUtil.
 
