@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.5.8 - 2023-07-14
+ * jquery.maxlength.js - version 1.6.0 - 2023-09-29
  * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -17,23 +17,29 @@
  * Add the attribute [data-horizontal-align="$align"] to customize text align position.
  * Add the attribute [data-sum="$selector"] to enable quick sum calculation on DOM elements matched by the jQuery selector, e.g. [data-sum="input.score"].
  * $.NumberUtil is an extended jQuery calculating utility for use.
+ * Use [$.NumberUtil.setNumberFormatStandard()] to choose number format manually from [ISO, EN, ES].
  */
 (function($) {
-	const DOT_KEY = [110, 190], MINUS_KEY = [109, 189], COMMON_KEY = {V: 86, X: 88};
-	const NUMBER_KEY = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105];
-	const FUNCTION_KEY = {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
-			PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40};
-	const KEY_TYPE = {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4};
-	const CORE = {VALID_CHARACTER: '-.0123456789', MINUS: '-', DOT: '.', ZERO: '0', COMMA: ',', EMPTY: '',
+	const GLOBALIZATION_ALTERNATIVE = {DOT: '.', COMMA: ',', SPACE: ' ', VALID_CHARACTER: '-0123456789',
+			DOT_KEY: [110, 190], COMMA_KEY: [188], SPACE_KEY: [32]};
+	const CORE = {VALID_CHARACTER: null, DOT: null, COMMA: null, MINUS: '-', ZERO: '0', EMPTY: '',
 			INTEGRAL: "integral", FRACTIONAL: "fractional", ALLOW_MINUS: "minus",
 			DEFAULT_ID: '_max_length_no_', MAX_LENGTH: "data-max-length", INIT_FRESH: "data-disable-init-refresh",
 			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma", SMART_MINUS: "data-disable-smart-minus",
-			HIGHLIGHT_MINUS: "data-enable-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align", SUM: "data-sum",
+			HIGHLIGHT_MINUS: "data-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align", SUM: "data-sum",
 			HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
+	const KEY = {
+		DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
+		NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
+		FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
+			PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40},
+		KEY_TYPE: {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4}
+	};
 	const DEFAULT_CSS = {HORIZONTAL_ALIGN: 'right', MINUS_COLOR: '#FF0000'};
 	const DEFAULT_CANCEL_LENGTH = {integral: 9};
 	const HORIZONTAL_ALIGN_OPTION = ['left', 'center', 'right', 'inherit'];
 	const CommonUtil = _CommonUtil();
+	globalizationAlternative();
 	$.extend({NumberUtil: _NumberUtil()});
 
 	let maxLengthBuffer = {};
@@ -51,11 +57,25 @@
 		.on("blur", selector, blurAction)
 		.on("compositionstart", selector, compositionstartAction)
 		.on("compositionend", selector, compositionendAction);
-	$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
-		focusAction({target: $(item)[0]});
-		blurAction({target: $(item)[0]});
-	});
-	$("[" + CORE.SUM + "]").each(sum);
+	initRefresh();
+
+	function initRefresh(changeAction) {
+		if (CommonUtil.exists(changeAction)) {
+			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
+				focusAction({target: $(item)[0]});
+			});
+			changeAction.apply();
+			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
+				blurAction({target: $(item)[0]});
+			});
+		} else {
+			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
+				focusAction({target: $(item)[0]});
+				blurAction({target: $(item)[0]});
+			});
+		}
+		$("[" + CORE.SUM + "]").each(sum);
+	}
 
 	function dragstartAction({target: dom}) {
 		if (dom.selectionStart !== dom.selectionEnd) {
@@ -110,6 +130,9 @@
 		if (!dataSetAbsent(dom, CORE.HIGHLIGHT_MINUS)) {
 			if (value.includes(CORE.MINUS)) {
 				let minusColor = $(dom).attr(CORE.HIGHLIGHT_MINUS);
+				if (!minusColor.startsWith('#')) {
+					minusColor = '#' + minusColor;
+				}
 				dom.style.setProperty("color", CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
 			} else {
 				dom.style.setProperty("color", '');
@@ -146,12 +169,13 @@
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
 		}
-		if (source.startsWith(CORE.DOT) || source.endsWith(CORE.DOT) || (!source.startsWith(CORE.MINUS) && source.includes(CORE.MINUS))) {
+		if (source.startsWith(GLOBALIZATION_ALTERNATIVE.DOT) || source.endsWith(GLOBALIZATION_ALTERNATIVE.DOT) ||
+				(!source.startsWith(CORE.MINUS) && source.includes(CORE.MINUS))) {
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
 		}
 		let absSource = source.includes(CORE.MINUS) ? source.substring(1) : source;
-		let sourceSep = absSource.split(CORE.DOT);
+		let sourceSep = absSource.split(GLOBALIZATION_ALTERNATIVE.DOT);
 		if (isNaN(Number(sourceSep[0])) || (absSource === CORE.ZERO && isNaN(Number(sourceSep[1])))) {
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
@@ -161,7 +185,7 @@
 		if (maxLength[CORE.INTEGRAL] === 0) {
 			maxLength[CORE.INTEGRAL] = DEFAULT_CANCEL_LENGTH[CORE.INTEGRAL];
 		}
-		if (absSource.indexOf(CORE.DOT) !== -1 && sourceSep[1] !== CORE.ZERO) {
+		if (absSource.indexOf(GLOBALIZATION_ALTERNATIVE.DOT) !== -1 && sourceSep[1] !== CORE.ZERO) {
 			maxLength[CORE.FRACTIONAL] = Number(sourceSep[1]);
 		}
 		if (source.startsWith(CORE.MINUS)) {
@@ -182,7 +206,7 @@
 
 	function isCombineKeyValid(dom, maxLength, keyCode, ctrlKey) {
 		if (ctrlKey) {
-			if (keyCode === COMMON_KEY.V) {
+			if (keyCode === KEY.COMMON_KEY.V) {
 				let value = dom.value;
 				let selectionEnd = dom.selectionEnd;
 				setTimeout(() => {
@@ -221,7 +245,7 @@
 					}
 				});
 				return true;
-			} else if (keyCode === COMMON_KEY.X) {
+			} else if (keyCode === KEY.COMMON_KEY.X) {
 				return isSelectOperationValid(dom, maxLength);
 			} else {
 				return true;
@@ -236,10 +260,10 @@
 		let selectionStart = dom.selectionStart, selectionEnd = dom.selectionEnd;
 		let cursorPos = selectionEnd;
 		let disableSmartMinus = $(dom).attr(CORE.SMART_MINUS);
-		if (keyType === KEY_TYPE.NONE) {
+		if (keyType === KEY.KEY_TYPE.NONE) {
 			return false;
 		}
-		if (keyType === KEY_TYPE.MINUS) {
+		if (keyType === KEY.KEY_TYPE.MINUS) {
 			if (!CommonUtil.exists(disableSmartMinus)) {
 				if (CommonUtil.exists(maxLength[CORE.ALLOW_MINUS])) {
 					let newValue = value.includes(CORE.MINUS) ? value.substring(1) : CORE.MINUS + value;
@@ -268,7 +292,7 @@
 				}
 			}
 		}
-		if (keyType === KEY_TYPE.DOT) {
+		if (keyType === KEY.KEY_TYPE.DOT) {
 			if (!CommonUtil.exists(maxLength[CORE.FRACTIONAL])) {
 				return false;
 			} else if (selectionStart === 0 && selectionEnd === value.length) {
@@ -297,7 +321,7 @@
 		let absValue = value.includes(CORE.MINUS) ? value.substring(1) : value;
 		let valueSep = absValue.split(CORE.DOT);
 		let dotPos = value.indexOf(CORE.DOT);
-		if (keyType === KEY_TYPE.NUMBER) {
+		if (keyType === KEY.KEY_TYPE.NUMBER) {
 			if (selectionStart === 0 && selectionEnd === value.length) {
 				return true;
 			} else if (value.includes(CORE.MINUS) && cursorPos === value.indexOf(CORE.MINUS)) {
@@ -320,10 +344,10 @@
 				}
 			}
 		}
-		if (keyType === KEY_TYPE.FUNCTION) {
+		if (keyType === KEY.KEY_TYPE.FUNCTION) {
 			if (selectionStart === 0 && selectionEnd === value.length) {
 				return true;
-			} else if (keyCode === FUNCTION_KEY.BACKSPACE) {
+			} else if (keyCode === KEY.FUNCTION_KEY.BACKSPACE) {
 				if (selectionStart !== selectionEnd) {
 					return isSelectOperationValid(dom, maxLength);
 				} else if (value.includes(CORE.DOT) && cursorPos === dotPos + 1 && valueSep[0].length + valueSep[1].length > maxLength[CORE.INTEGRAL]) {
@@ -331,7 +355,7 @@
 				} else {
 					return true;
 				}
-			} else if (keyCode === FUNCTION_KEY.DEL) {
+			} else if (keyCode === KEY.FUNCTION_KEY.DEL) {
 				if (selectionStart !== selectionEnd) {
 					return isSelectOperationValid(dom, maxLength);
 				} else if (value.includes(CORE.DOT) && cursorPos === dotPos && valueSep[0].length + valueSep[1].length > maxLength[CORE.INTEGRAL]) {
@@ -366,16 +390,16 @@
 	}
 
 	function getKeyType(keyCode) {
-		if (DOT_KEY.includes(keyCode)) {
-			return KEY_TYPE.DOT;
-		} else if (MINUS_KEY.includes(keyCode)) {
-			return KEY_TYPE.MINUS;
-		} else if (NUMBER_KEY.includes(keyCode)) {
-			return KEY_TYPE.NUMBER;
-		} else if (Object.values(FUNCTION_KEY).includes(keyCode)) {
-			return KEY_TYPE.FUNCTION;
+		if (KEY.DOT_KEY.includes(keyCode)) {
+			return KEY.KEY_TYPE.DOT;
+		} else if (KEY.MINUS_KEY.includes(keyCode)) {
+			return KEY.KEY_TYPE.MINUS;
+		} else if (KEY.NUMBER_KEY.includes(keyCode)) {
+			return KEY.KEY_TYPE.NUMBER;
+		} else if (Object.values(KEY.FUNCTION_KEY).includes(keyCode)) {
+			return KEY.KEY_TYPE.FUNCTION;
 		} else {
-			return KEY_TYPE.NONE;
+			return KEY.KEY_TYPE.NONE;
 		}
 	}
 
@@ -390,6 +414,51 @@
 		});
 	}
 
+	function globalizationAlternative(fixed) {
+		let option = {
+			ISO: {DOT: GLOBALIZATION_ALTERNATIVE.DOT, DOT_KEY: GLOBALIZATION_ALTERNATIVE.DOT_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.SPACE},
+			EN: {DOT: GLOBALIZATION_ALTERNATIVE.DOT, DOT_KEY: GLOBALIZATION_ALTERNATIVE.DOT_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.COMMA},
+			ES: {DOT: GLOBALIZATION_ALTERNATIVE.COMMA, DOT_KEY: GLOBALIZATION_ALTERNATIVE.COMMA_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.DOT}
+		};
+		let alter;
+		if (CommonUtil.exists(fixed)) {
+			alter = option[String(fixed).toLocaleUpperCase()];
+		}
+		if (!CommonUtil.exists(alter)) {
+			let language = $('html').attr("lang");
+			if (!CommonUtil.exists(language)) {
+				language = navigator.language;
+			}
+			if (
+					language.startsWith('ar') ||
+					language.startsWith('en') ||
+					language.startsWith('ja') ||
+					language.startsWith('iw') ||
+					language.startsWith('ko') ||
+					language.startsWith('zh')) {
+				alter = option.EN;
+			} else if (
+					language.startsWith('da') ||
+					language.startsWith('de') ||
+					language.startsWith('el') ||
+					language.startsWith('es') ||
+					language.startsWith('it') ||
+					language.startsWith('nl') ||
+					language.startsWith('pt') ||
+					language.startsWith('ru') ||
+					language.startsWith('sv') ||
+					language.startsWith('tr')) {
+				alter = option.ES;
+			} else {
+				alter = option.ISO;
+			}
+		}
+		KEY.DOT_KEY = alter.DOT_KEY;
+		CORE.VALID_CHARACTER = alter.DOT + GLOBALIZATION_ALTERNATIVE.VALID_CHARACTER;
+		CORE.DOT = alter.DOT;
+		CORE.COMMA = alter.COMMA;
+	}
+
 	function _NumberUtil() {
 		const RECURSION_FLAG = "recursion_flag";
 
@@ -401,6 +470,9 @@
 				} else if (typeof source === "string") {
 					let trimmedSource = source.trim().replaceAll(CORE.COMMA, CORE.EMPTY);
 					if (!CommonUtil.isBlank(trimmedSource)) {
+						if (CORE.DOT !== GLOBALIZATION_ALTERNATIVE.DOT) {
+							trimmedSource = trimmedSource.replaceAll(CORE.DOT, GLOBALIZATION_ALTERNATIVE.DOT);
+						}
 						trimmedSource = Number(trimmedSource);
 						if (!isNaN(trimmedSource)) {
 							result = trimmedSource;
@@ -437,7 +509,8 @@
 			let decimalPlaceMultiplicator1 = Math.pow(10, maxDecimalPlace - decimalPlace1);
 			let decimalPlaceMultiplicator2 = Math.pow(10, maxDecimalPlace - decimalPlace2);
 			let decimalPlaceMultiplicator = Math.pow(10, maxDecimalPlace);
-			return (removeDecimalPoint(addend1) * decimalPlaceMultiplicator1 + removeDecimalPoint(addend2) * decimalPlaceMultiplicator2) / decimalPlaceMultiplicator;
+			return (removeDecimalPoint(addend1) * decimalPlaceMultiplicator1 +
+					removeDecimalPoint(addend2) * decimalPlaceMultiplicator2) / decimalPlaceMultiplicator;
 		}
 
 		function sum(...addends) {
@@ -584,7 +657,7 @@
 			source = source.toString().trim();
 			source = source.replaceAll(CORE.COMMA, CORE.EMPTY);
 			let sourceSep = source.split(CORE.DOT);
-			let result = sourceSep[0].replace(/\.+$/g, '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+			let result = sourceSep[0].replace(/\.+$/g, '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + CORE.COMMA);
 			if (CommonUtil.exists(sourceSep[1])) {
 				result = result + CORE.DOT + sourceSep[1];
 			}
@@ -644,6 +717,10 @@
 			return sourceSep[0] + CORE.DOT + result.padEnd(fractionalLength, CORE.ZERO);
 		}
 
+		function setNumberFormatStandard(standard) {
+			initRefresh(() => globalizationAlternative(standard));
+		}
+
 		return {
 			sum: sum,
 			blendSum: blendSum,
@@ -663,7 +740,8 @@
 			drainFractional: drainFractional,
 			fillFractional: fillFractional,
 			setValue: CommonUtil.setValue,
-			getValue: CommonUtil.getValue
+			getValue: CommonUtil.getValue,
+			setNumberFormatStandard: setNumberFormatStandard
 		};
 	}
 

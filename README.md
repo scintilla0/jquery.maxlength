@@ -12,6 +12,11 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.6.0 (2023-09-29)
+*	Add number format globalization support.
+*	Change attribute name from [data-enable-highlight-minus] to [data-highlight-minus], apologize for the inconvenience.
+*	[data-highlight-minus] can recognize hex without '#' now, but not recommended.
+
 #### 1.5.8 (2023-07-14)
 *	Add support for jQuery's no Conflict mode. (Contributor: [Squibler](https://github.com/Squibler))
 
