@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.6.0 - 2023-09-29
+ * jquery.maxlength.js - version 1.6.1 - 2023-09-29
  * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -114,7 +114,7 @@
 		*/
 		dom.value = value;
 		if (!dataSetAbsent(dom, CORE.HIGHLIGHT_MINUS)) {
-			dom.style.setProperty("color", '');
+			dom.style.setProperty("color", CORE.EMPTY);
 		}
 	}
 
@@ -135,7 +135,7 @@
 				}
 				dom.style.setProperty("color", CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
 			} else {
-				dom.style.setProperty("color", '');
+				dom.style.setProperty("color", CORE.EMPTY);
 			}
 		}
 	}
@@ -657,7 +657,7 @@
 			source = source.toString().trim();
 			source = source.replaceAll(CORE.COMMA, CORE.EMPTY);
 			let sourceSep = source.split(CORE.DOT);
-			let result = sourceSep[0].replace(/\.+$/g, '').replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + CORE.COMMA);
+			let result = sourceSep[0].replace(/\.+$/g, CORE.EMPTY).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + CORE.COMMA);
 			if (CommonUtil.exists(sourceSep[1])) {
 				result = result + CORE.DOT + sourceSep[1];
 			}

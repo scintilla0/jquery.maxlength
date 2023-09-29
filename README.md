@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.6.1 (2023-09-29)
+*	Minor optimization.
+
 #### 1.6.0 (2023-09-29)
 *	Add number format globalization support.
 *	Change attribute name from [data-enable-highlight-minus] to [data-highlight-minus], apologize for the inconvenience.
