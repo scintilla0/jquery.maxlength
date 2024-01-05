@@ -1,6 +1,6 @@
 /*!
- * jquery.maxlength.js - version 1.6.1 - 2023-09-29
- * Copyright (c) 2023 scintilla0 (https://github.com/scintilla0)
+ * jquery.maxlength.js - version 1.6.2 - 2024-01-05
+ * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
@@ -409,7 +409,7 @@
 
 	function sum(_, item) {
 		let selector = $(item).attr(CORE.SUM);
-		$(document).on("change", selector, function() {
+		$(document).on("change", selector, () => {
 			CommonUtil.setValue($.NumberUtil.selectorSum(selector), true, item);
 		});
 	}

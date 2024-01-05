@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.6.2 (2024-01-05)
+*	Minor optimization.
+
 #### 1.6.1 (2023-09-29)
 *	Minor optimization.
 
