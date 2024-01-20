@@ -447,7 +447,9 @@
 					language.startsWith('pt') ||
 					language.startsWith('ru') ||
 					language.startsWith('sv') ||
-					language.startsWith('tr')) {
+					language.startsWith('tr') ||
+			                language.startsWith('sl') ||
+			                language.startsWith('fr')) {
 				alter = option.ES;
 			} else {
 				alter = option.ISO;
