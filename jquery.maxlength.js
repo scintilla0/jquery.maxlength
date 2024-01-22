@@ -1,7 +1,7 @@
 /*!
- * jquery.maxlength.js - version 1.6.2 - 2024-01-05
+ * jquery.maxlength.js - version 1.6.3 - 2024-01-22
  * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
- * Contributors: Squibler
+ * Contributors: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
  *
@@ -448,8 +448,8 @@
 					language.startsWith('ru') ||
 					language.startsWith('sv') ||
 					language.startsWith('tr') ||
-			                language.startsWith('sl') ||
-			                language.startsWith('fr')) {
+					language.startsWith('sl') ||
+					language.startsWith('fr')) {
 				alter = option.ES;
 			} else {
 				alter = option.ISO;
