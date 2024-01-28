@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.6.4 (2024-01-28)
+*	Minor optimization.
+
 #### 1.6.3 (2024-01-22)
 *	Add number format support of Slovenian(sl) and French(fr) locale. (Contributor: [ahotko](https://github.com/ahotko))
 

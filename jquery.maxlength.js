@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.6.3 - 2024-01-22
+ * jquery.maxlength.js - version 1.6.4 - 2024-01-28
  * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -32,7 +32,7 @@
 		DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
 		NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
 		FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
-			PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40},
+				PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40},
 		KEY_TYPE: {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4}
 	};
 	const DEFAULT_CSS = {HORIZONTAL_ALIGN: 'right', MINUS_COLOR: '#FF0000'};
@@ -429,27 +429,10 @@
 			if (!CommonUtil.exists(language)) {
 				language = navigator.language;
 			}
-			if (
-					language.startsWith('ar') ||
-					language.startsWith('en') ||
-					language.startsWith('ja') ||
-					language.startsWith('iw') ||
-					language.startsWith('ko') ||
-					language.startsWith('zh')) {
+			let containsLanguage = codeArray => codeArray.some(code => language.startsWith(code));
+			if (containsLanguage(['ar', 'en', 'ja', 'iw', 'ko', 'zh'])) {
 				alter = option.EN;
-			} else if (
-					language.startsWith('da') ||
-					language.startsWith('de') ||
-					language.startsWith('el') ||
-					language.startsWith('es') ||
-					language.startsWith('it') ||
-					language.startsWith('nl') ||
-					language.startsWith('pt') ||
-					language.startsWith('ru') ||
-					language.startsWith('sv') ||
-					language.startsWith('tr') ||
-					language.startsWith('sl') ||
-					language.startsWith('fr')) {
+			} else if (containsLanguage(['da', 'de', 'el', 'es', 'it', 'nl', 'pt', 'ru', 'sv', 'tr', 'sl', 'fr'])) {
 				alter = option.ES;
 			} else {
 				alter = option.ISO;
