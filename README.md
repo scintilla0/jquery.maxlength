@@ -12,6 +12,11 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.0 (2024-02-09)
+*	Major optimization, initialization execution efficiency is greatly increased.
+*	Maintain cursor position when focus on an input element.
+*	Maintain same globalization option in initialization process.
+
 #### 1.6.4 (2024-01-28)
 *	Minor optimization.
 

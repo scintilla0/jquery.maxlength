@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.6.4 - 2024-01-28
+ * jquery.maxlength.js - version 1.7.0 - 2024-02-09
  * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -7,7 +7,7 @@
  *
  * A plugin for dynamic decimal max length auto-configuration.
  * Requires jQuery.
- * Add the attribute [data-max-length="$minus$integral.$fractional"] to enable automatic configuration, e.g. [data-max-length="-5.2"]．
+ * Add the attribute [data-max-length="$minus$integral.$fractional"] to enable automatic configuration, e.g. [data-max-length="-5.2"].
  * Values of 0 for the integral limit, as well as any other unreadable parameters, will be reset to the default value of {integral: 9}.
  * Add the attribute [data-disable-autofill] to disable fractional autofill.
  * Add the attribute [data-disable-auto-comma] to disable comma autofill.
@@ -61,19 +61,9 @@
 
 	function initRefresh(changeAction) {
 		if (CommonUtil.exists(changeAction)) {
-			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
-				focusAction({target: $(item)[0]});
-			});
 			changeAction.apply();
-			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
-				blurAction({target: $(item)[0]});
-			});
-		} else {
-			$(selector + ":not([" + CORE.INIT_FRESH + "])").each((_, item) => {
-				focusAction({target: $(item)[0]});
-				blurAction({target: $(item)[0]});
-			});
 		}
+		$(selector + ":not([" + CORE.INIT_FRESH + "])").each(initFocusAndBlur);
 		$("[" + CORE.SUM + "]").each(sum);
 	}
 
@@ -100,22 +90,20 @@
 		if (dataSetAbsent(dom, CORE.AUTO_COMMA)) {
 			value = $.NumberUtil.undressNumber(value);
 		}
-		/* TODO
-		let originalValue = dom.value;
-		let originalCursorPos = dom.selectionEnd;
-		let cursorPos = 0;
-		$(dom).focus();
-		for (let index = 0; index < originalCursorPos && index < originalValue.length && cursorPos < value.length; index ++) {
-			if (originalValue[index] === value[cursorPos]) {
-				cursorPos ++;
-			}
-		}
-		dom.selectionEnd = cursorPos;
-		*/
-		dom.value = value;
 		if (!dataSetAbsent(dom, CORE.HIGHLIGHT_MINUS)) {
 			dom.style.setProperty("color", CORE.EMPTY);
 		}
+		setTimeout(() => {
+			let originalValueFirstPart = dom.value.substring(0, dom.selectionEnd);
+			dom.value = value;
+			if (dataSetAbsent(dom, CORE.AUTOFILL)) {
+				originalValueFirstPart = $.NumberUtil.drainFractional(originalValueFirstPart);
+			}
+			if (dataSetAbsent(dom, CORE.AUTO_COMMA)) {
+				originalValueFirstPart = $.NumberUtil.undressNumber(originalValueFirstPart);
+			}
+			dom.selectionEnd = originalValueFirstPart.length <= value.length ? originalValueFirstPart.length : value.length;
+		});
 	}
 
 	function blurAction({target: dom}) {
@@ -126,7 +114,6 @@
 		if (dataSetAbsent(dom, CORE.AUTO_COMMA)) {
 			value = $.NumberUtil.dressNumber(value);
 		}
-		dom.value = value;
 		if (!dataSetAbsent(dom, CORE.HIGHLIGHT_MINUS)) {
 			if (value.includes(CORE.MINUS)) {
 				let minusColor = $(dom).attr(CORE.HIGHLIGHT_MINUS);
@@ -138,6 +125,32 @@
 				dom.style.setProperty("color", CORE.EMPTY);
 			}
 		}
+		setTimeout(() => {
+			dom.value = value;
+		});
+	}
+
+	function initFocusAndBlur() {
+		let value = $.NumberUtil.drainIntegral(this.value);
+		if (dataSetAbsent(this, CORE.AUTOFILL)) {
+			value = $.NumberUtil.drainFractional(value);
+			value = $.NumberUtil.fillFractional(value, getMaxLength(this)[CORE.FRACTIONAL]);
+		}
+		if (dataSetAbsent(this, CORE.AUTO_COMMA)) {
+			value = $.NumberUtil.dressNumber(value);
+		}
+		if (!dataSetAbsent(this, CORE.HIGHLIGHT_MINUS)) {
+			if (value.includes(CORE.MINUS)) {
+				let minusColor = $(this).attr(CORE.HIGHLIGHT_MINUS);
+				if (!minusColor.startsWith('#')) {
+					minusColor = '#' + minusColor;
+				}
+				this.style.setProperty("color", CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
+			} else {
+				this.style.setProperty("color", CORE.EMPTY);
+			}
+		}
+		this.value = value;
 	}
 
 	function compositionstartAction({target: dom}) {
@@ -639,8 +652,7 @@
 			if (mix2Number(source) === null) {
 				return source;
 			}
-			source = source.toString().trim();
-			source = source.replaceAll(CORE.COMMA, CORE.EMPTY);
+			source = undressNumber(source);
 			let sourceSep = source.split(CORE.DOT);
 			let result = sourceSep[0].replace(/\.+$/g, CORE.EMPTY).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + CORE.COMMA);
 			if (CommonUtil.exists(sourceSep[1])) {
