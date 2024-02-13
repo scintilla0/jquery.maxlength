@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.0 - 2024-02-09
+ * jquery.maxlength.js - version 1.7.1 - 2024-02-13
  * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * Contributors: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -102,7 +102,13 @@
 			if (dataSetAbsent(dom, CORE.AUTO_COMMA)) {
 				originalValueFirstPart = $.NumberUtil.undressNumber(originalValueFirstPart);
 			}
-			dom.selectionEnd = originalValueFirstPart.length <= value.length ? originalValueFirstPart.length : value.length;
+			let cursorRepositioning = () => dom.selectionStart = dom.selectionEnd = originalValueFirstPart.length <= value.length ? originalValueFirstPart.length : value.length;
+            cursorRepositioning.apply(null);
+			$(dom).one("select", () => {
+				$(window).one("mouseup", () => {
+                    cursorRepositioning.apply(null);
+				});
+			});
 		});
 	}
 

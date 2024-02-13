@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.1 (2024-02-13)
+*	Maintain cursor position when focusing on an input element and then starting to select its characters in a single mouse click action.
+
 #### 1.7.0 (2024-02-09)
 *	Major optimization, initialization execution efficiency is greatly increased.
 *	Maintain cursor position when focus on an input element.
