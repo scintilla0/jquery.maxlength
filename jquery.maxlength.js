@@ -1,11 +1,12 @@
 /*!
- * jquery.maxlength.js - version 1.7.1 - 2024-02-13
- * Copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
- * Contributors: Squibler, ahotko
+ * jquery.maxlength.js - version 1.7.2 - 2024-02-19
+ * @copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
+ * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
- *
- * A plugin for dynamic decimal max length auto-configuration.
+ */
+/**
+ * This is a plugin for dynamic decimal max length auto-configuration.
  * Requires jQuery.
  * Add the attribute [data-max-length="$minus$integral.$fractional"] to enable automatic configuration, e.g. [data-max-length="-5.2"].
  * Values of 0 for the integral limit, as well as any other unreadable parameters, will be reset to the default value of {integral: 9}.
@@ -28,13 +29,11 @@
 			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma", SMART_MINUS: "data-disable-smart-minus",
 			HIGHLIGHT_MINUS: "data-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align", SUM: "data-sum",
 			HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
-	const KEY = {
-		DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
-		NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
-		FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
-				PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40},
-		KEY_TYPE: {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4}
-	};
+	const KEY = {DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
+			NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
+			FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
+					PAGE_UP: 33, PAGE_DOWN: 34, END: 35, HOME: 36, LEFT: 37, RIGHT: 38, UP: 39, DOWN: 40},
+			KEY_TYPE: {NONE: 0, MINUS: 1, DOT: 2, NUMBER: 3, FUNCTION: 4}};
 	const DEFAULT_CSS = {HORIZONTAL_ALIGN: 'right', MINUS_COLOR: '#FF0000'};
 	const DEFAULT_CANCEL_LENGTH = {integral: 9};
 	const HORIZONTAL_ALIGN_OPTION = ['left', 'center', 'right', 'inherit'];
@@ -51,12 +50,12 @@
 		prepareMaxLength(item);
 	});
 	$(document)
-		.on("dragstart", selector, dragstartAction)
-		.on("keydown", selector, keydownAction)
-		.on("focus", selector, focusAction)
-		.on("blur", selector, blurAction)
-		.on("compositionstart", selector, compositionstartAction)
-		.on("compositionend", selector, compositionendAction);
+			.on("dragstart", selector, dragstartAction)
+			.on("keydown", selector, keydownAction)
+			.on("focus", selector, focusAction)
+			.on("blur", selector, blurAction)
+			.on("compositionstart", selector, compositionstartAction)
+			.on("compositionend", selector, compositionendAction);
 	initRefresh();
 
 	function initRefresh(changeAction) {
@@ -102,11 +101,11 @@
 			if (dataSetAbsent(dom, CORE.AUTO_COMMA)) {
 				originalValueFirstPart = $.NumberUtil.undressNumber(originalValueFirstPart);
 			}
-			let cursorRepositioning = () => dom.selectionStart = dom.selectionEnd = originalValueFirstPart.length <= value.length ? originalValueFirstPart.length : value.length;
-            cursorRepositioning.apply(null);
+			let cursorRepositioning = () => dom.selectionStart = dom.selectionEnd = Math.min(originalValueFirstPart.length, value.length);
+			cursorRepositioning.apply(null);
 			$(dom).one("select", () => {
 				$(window).one("mouseup", () => {
-                    cursorRepositioning.apply(null);
+					cursorRepositioning.apply(null);
 				});
 			});
 		});
