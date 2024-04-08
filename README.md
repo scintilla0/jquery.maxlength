@@ -8,7 +8,7 @@ CDN URL:
 CDN URL(min.js):
 `https://cdn.jsdelivr.net/gh/scintilla0/jquery.maxlength@latest/jquery.maxlength.min.js`
 
-### [Demo](https://codepen.io/scintilla_0/full/MWPQJWv)
+### [Demo](https://scintilla0.github.io/jquery.maxlength/)
 
 ### Change log
 
