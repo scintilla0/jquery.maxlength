@@ -1,0 +1,464 @@
+<html lang="en">
+<head>
+	<title>jquery.maxlength.js demo</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="robots" content="noindex, nofollow">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
+	<style>
+		.center {
+			text-align: center;
+		}
+
+		div#container {
+			margin: 30px 80px;
+		}
+		div#title {
+			margin-top: 100px;
+			margin-bottom: 50px;
+		}
+		p.brief::before {
+			content: '●';
+		}
+		p.brief span.expression {
+			font-weight: bold;
+		}
+		p.brief span.varName {
+			font-family: "system-ui";
+			font-weight: bold;
+			color: #FF6666;
+		}
+		div.item {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-top: -10px;
+			margin-bottom: 10px;
+		}
+		div.item input {
+			height: 25px;
+			width: 200px;
+			font-size: 18px;
+		}
+		div.item input::-webkit-input-placeholder {
+			color: #CCCCCC;
+		}
+		div.item pre.code {
+			display: flex;
+			margin-left: 10px;
+			width: 70%;
+			font-size: 16px;
+		}
+		div.item pre.code code {
+			padding-top: 0;
+			padding-bottom: 0;
+			background-color: inherit;
+			font-family: "Bree Serif", serif;
+			tab-size: 4;
+		}
+		table, table tr, table td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		table.no-border, table.no-border tr, table.no-border td {
+			border: none;
+		}
+		table input {
+			border: none;
+		}
+		pre.expressionTest {
+			font-family: "Bree Serif", serif;
+			font-size: 18px;
+		}
+		label#expressionTestOutput {
+			font-weight: bold;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="container">
+		<div id="title">
+			<h1 class="center">jquery.maxlength.js</h1>
+			<p class="center">
+				A plugin for dynamic decimal max length auto-configuration<br>
+				<a href="https://github.com/scintilla0/jquery.maxlength" target="_blank">View and get the source code on Github</a>
+			</p>
+		</div>
+
+		<form autocomplete="off">
+			<div class="subject">
+				<h3>[data-max-length]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Add the attribute <span class="expression">[data-max-length="<span class="varName">[$minus]</span><span class="varName">[$integral]</span>.<span class="varName">[$fractional]</span>"]</span> to your input element to enable automatic configuration.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="-5.2" placeholder="-12,345.00">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="-5.2"&gt;</code>
+						</pre>
+					</div>
+				</div>
+
+				<div class="content">
+					<p class="brief">
+						Omit <span class="varName">[$minus]</span> if negative numbers are not allowed in your input element.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5.2" placeholder="12,345.00">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5.2"&gt;</code>
+						</pre>
+					</div>
+				</div>
+
+				<div class="content">
+					<p class="brief">
+						<span class="varName">[$fractional]</span> can be omitted as well if only integral numbers are allowed in your input element.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5" placeholder="12,345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5"&gt;</code>
+						</pre>
+					</div>
+				</div>
+
+				<div class="content">
+					<p class="brief">
+						Values of <span class="expression">0</span> for the integral limit, as well as any other unreadable parameters, will be reset to the default value of <span class="expression">{integral: 9}</span>.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="0.2" placeholder="123,456,789.00">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="0.2"&gt;</code>
+						</pre>
+					</div>
+					<div class="item">
+						<input type="text" data-max-length="" placeholder="123,456,789">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length=""&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>[data-disable-autofill]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Add the attribute <span class="expression">[data-disable-autofill]</span> to disable fractional autofill.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5.2" data-disable-autofill placeholder="12,345.1">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5.2" data-disable-autofill&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="subject">
+				<h3>[data-disable-auto-comma]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Add the attribute <span class="expression">[data-disable-auto-comma]</span> to disable comma autofill.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5" data-disable-auto-comma placeholder="12345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5" data-disable-auto-comma&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>[data-disable-smart-minus]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Press the minus key to conveniently change the plus or minus sign of the number.<br>
+						&emsp;Add the attribute <span class="expression">[data-disable-smart-minus]</span> to disable this mechanism.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="-5" placeholder="-12,345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="-5"&gt;</code>
+						</pre>
+					</div>
+					<div class="item">
+						<input type="text" data-max-length="-5" data-disable-smart-minus placeholder="-12,345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="-5" data-disable-smart-minus&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>[data-disable-init-refresh]</h3>
+
+				<div class="content">
+					<p class="brief">
+						All input elements with max length configuration will trigger all its enabled functions when document is ready.<br>
+						&emsp;Add the attribute <span class="expression">[data-disable-init-refresh]</span> to disable this initial fresh process.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5.2" value="12345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345"&gt;</code>
+						</pre>
+					</div>
+					<div class="item">
+						<input type="text" data-max-length="5.2" value="12345" data-disable-init-refresh>
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345" data-disable-init-refresh&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="subject">
+				<h3>[data-highlight-minus]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Add the attribute <span class="expression">[data-highlight-minus="<span class="varName">[$hex]</span>"]</span> to enable highlighting of negative values.<br>
+						&emsp;Uses default <span style="color: #FF0000;">red(#FF0000)</span> color if the hexadecimal color is not assigned.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="-5" value="-12345" data-highlight-minus>
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus&gt;</code>
+						</pre>
+					</div>
+					<div class="item">
+						<input type="text" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF"&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>[data-horizontal-align]</h3>
+
+				<div class="content">
+					<p class="brief">
+						All input elements with max length configuration will be aligned right side when not focused.<br>
+						&emsp;Add the attribute <span class="expression">[data-horizontal-align="<span class="varName">[$align]</span>"]</span> to customize text align position.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="5" data-horizontal-align="left" placeholder="12,345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="left"&gt;</code>
+						</pre>
+					</div>
+					<div class="item">
+						<input type="text" data-max-length="5" data-horizontal-align="center" placeholder="12,345">
+						<pre class="code">
+							<code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="center"&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>[data-sum]</h3>
+
+				<div class="content">
+					<p class="brief">
+						Add the attribute <span class="expression">[data-sum="<span class="varName">[$selector]</span>"]</span> to enable quick sum calculation on DOM elements matched by the jQuery selector.
+					</p>
+					<div class="item">
+						<table>
+							<tr>
+								<td>
+									<label>item 1</label>
+								</td>
+								<td>
+									<input type="text" class="sumTarget" data-max-length="-5.2">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label>item 2</label>
+								</td>
+								<td>
+									<input type="text" class="sumTarget" data-max-length="-5.2">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label>item 3</label>
+								</td>
+								<td>
+									<input type="text" class="sumTarget" data-max-length="-5.2">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label>sum</label>
+								</td>
+								<td>
+									<input type="text" data-sum="input.sumTarget" data-max-length="-6.2">
+								</td>
+							</tr>
+						</table>
+						<pre class="code">
+							<code class="language-html">&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;label&gt;item 1&lt;/label&gt;&lt;/td&gt;
+		&lt;td&gt;&lt;input type="text" class="sumTarget" data-max-length="-5.2"&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;label&gt;item 2&lt;/label&gt;&lt;/td&gt;
+		&lt;td&gt;&lt;input type="text" class="sumTarget" data-max-length="-5.2"&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;label&gt;item 3&lt;/label&gt;&lt;/td&gt;
+		&lt;td&gt;&lt;input type="text" class="sumTarget" data-max-length="-5.2"&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;label&gt;sum&lt;/label&gt;&lt;/td&gt;
+		&lt;td&gt;&lt;input type="text" data-sum="input.sumTarget" data-max-length="-6.2"&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>$.NumberUtil</h3>
+
+				<div class="content">
+					<p class="brief">
+						<span class="expression">$.NumberUtil</span> is an extended jQuery decimal calculating utility for use.
+					</p>
+					<div class="item">
+						<pre class="expressionTest">$.NumberUtil.<input type="text" id="expressionTestInput" list="utilMethodList"> -> <label class="brief" id="expressionTestOutput"></label></pre>
+						<datalist id="utilMethodList">
+							<option value="sum"></option>
+							<option value="blendSum"></option>
+							<option value="selectorSum"></option>
+							<option value="product"></option>
+							<option value="productNN"></option>
+							<option value="selectorProduct"></option>
+							<option value="selectorProductNN"></option>
+							<option value="quotient"></option>
+							<option value="round"></option>
+							<option value="floor"></option>
+							<option value="ceil"></option>
+							<option value="mix2Number"></option>
+							<option value="dressNumber"></option>
+							<option value="undressNumber"></option>
+							<option value="drainIntegral"></option>
+							<option value="drainFractional"></option>
+							<option value="fillFractional"></option>
+							<option value="setValue"></option>
+							<option value="getValue"></option>
+						</datalist>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3>Number Format Globalization Support</h3>
+
+				<div class="content">
+					<p class="brief">
+						Automatically read your attribute <span class="expression">[lang]</span> of your <span class="expression">[html]</span> tag to select the proper number format.<br>
+						&emsp;If fail, then read the language of user's browser.
+						&emsp;For code consistency, please remain using <span class="expression">[<span class="varName">'.'</span>]</span> as decimal point in attribute <span class="expression">[data-max-length]</span>.
+					</p>
+					<div class="item">
+						<input type="text" data-max-length="-5.2" value="-12,345.00">
+						<pre class="code">
+							<code class="language-html">&lt;html lang="en"&gt;
+&lt;/html&gt;</code>
+						</pre>
+					</div>
+				</div>
+
+				<div class="content">
+					<p class="brief">
+						If that doesn't match the correct format, you can invoke <span class="expression">$.NumberUtil.setNumberFormatStandard()</span> in your ready event to select format from <span class="expression">[<span class="varName">"ISO"</span>, <span class="varName">"EN"</span>, <span class="varName">"ES"</span>]</span>.
+					</p>
+					<div class="item">
+						<table class="no-border">
+							<tr>
+								<td>
+									<button type="button" id="numberFormatResetButton" style="margin: 10px;">set number format to</button>
+								</td>
+								<td>
+									<input type="text" id="numberFormatResetInput" value="EN" style="width: 40px;">
+								</td>
+							</tr>
+						</table>
+						<pre class="code">
+							<code class="language-js" id="numberFormatResetChangeCode"></code>
+						</pre>
+					</div>
+				</div>
+			</div>
+
+		</form>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+	<script src="jquery.maxlength.js"></script>
+	<script>
+		$("#expressionTestInput").on("keyup", ({target: dom}) => {
+			let outputSelector = $("#expressionTestOutput");
+			let expression = '$.NumberUtil.' + dom.value;
+			let result;
+			try {
+				result = eval(expression);
+			} catch (error) {
+				try {
+					result = eval(expression + ')');
+				} catch (error) {
+					result = '';
+				}
+			}
+			if (typeof result === "number") {
+				$(outputSelector).css("color", '#0022FF');
+			} else if (typeof result === "string" && result !== '') {
+				$(outputSelector).css("color", '#FF0022');
+				result = '\'' + result + '\'';
+			} else {
+				$(outputSelector).css("color", 'inherit');
+				result = '';
+			}
+			$(outputSelector).text(result);
+		});
+
+		$("#numberFormatResetButton").on("click", () => {
+			$.NumberUtil.setNumberFormatStandard($("#numberFormatResetInput").val());
+		});
+
+		$("#numberFormatResetInput").on("keydown", ({target: dom}) => {
+			setTimeout(() => {
+				$("#numberFormatResetChangeCode").html(
+					'$(document).ready(() => {\n' +
+					'	$.NumberUtil.setNumberFormatStandard(\'' + dom.value + '\');\n' +
+					'});'
+				);
+				hljs.highlightAll();
+			});
+		}).keydown();
+
+	</script>
+</body>
+</html>

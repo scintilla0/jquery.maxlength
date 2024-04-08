@@ -47,7 +47,7 @@ CDN URL(min.js):
 *	Change NumberUtil() to an extended object of jQuery: $.NumberUtil.
 
 #### 1.5.6 (2023-05-21)
-*	Remove unused exports of the internal util.
+*	Remove unused exports of the internal utils.
 
 #### 1.5.5 (2023-05-20)
 *	NumberUtil().quotient() miscalculation fixed.
