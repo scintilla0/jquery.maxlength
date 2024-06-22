@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.2 - 2024-02-19
+ * jquery.maxlength.js - version 1.7.3 - 2024-06-23
  * @copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -7,7 +7,7 @@
  */
 /**
  * This is a plugin for dynamic decimal max length auto-configuration.
- * Requires jQuery.
+ * Requires jQuery 1.7.x or higher.
  * Add the attribute [data-max-length="$minus$integral.$fractional"] to enable automatic configuration, e.g. [data-max-length="-5.2"].
  * Values of 0 for the integral limit, as well as any other unreadable parameters, will be reset to the default value of {integral: 9}.
  * Add the attribute [data-disable-autofill] to disable fractional autofill.
@@ -44,7 +44,7 @@
 	let maxLengthBuffer = {};
 	let contentBuffer;
 
-	let selector = "[" + CORE.MAX_LENGTH + "]";
+	let selector = `[${CORE.MAX_LENGTH}]`;
 	$(selector).each((_, item) => {
 		prepareStyle(item);
 		prepareMaxLength(item);
@@ -62,8 +62,8 @@
 		if (CommonUtil.exists(changeAction)) {
 			changeAction.apply();
 		}
-		$(selector + ":not([" + CORE.INIT_FRESH + "])").each(initFocusAndBlur);
-		$("[" + CORE.SUM + "]").each(sum);
+		$(`${selector}:not([${CORE.INIT_FRESH}])`).each(initFocusAndBlur);
+		$(`[${CORE.SUM}]`).each(sum);
 	}
 
 	function dragstartAction({target: dom}) {
@@ -90,7 +90,7 @@
 			value = $.NumberUtil.undressNumber(value);
 		}
 		if (!dataSetAbsent(dom, CORE.HIGHLIGHT_MINUS)) {
-			dom.style.setProperty("color", CORE.EMPTY);
+			$(dom).css(`color`, CORE.EMPTY);
 		}
 		setTimeout(() => {
 			let originalValueFirstPart = dom.value.substring(0, dom.selectionEnd);
@@ -125,9 +125,9 @@
 				if (!minusColor.startsWith('#')) {
 					minusColor = '#' + minusColor;
 				}
-				dom.style.setProperty("color", CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
+				$(dom).css(`color`, CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
 			} else {
-				dom.style.setProperty("color", CORE.EMPTY);
+				$(dom).css(`color`, CORE.EMPTY);
 			}
 		}
 		setTimeout(() => {
@@ -150,9 +150,9 @@
 				if (!minusColor.startsWith('#')) {
 					minusColor = '#' + minusColor;
 				}
-				this.style.setProperty("color", CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
+				$(this).css(`color`, CORE.HEX_REGEX.test(minusColor) ? minusColor : DEFAULT_CSS.MINUS_COLOR);
 			} else {
-				this.style.setProperty("color", CORE.EMPTY);
+				$(this).css(`color`, CORE.EMPTY);
 			}
 		}
 		this.value = value;
@@ -173,7 +173,7 @@
 			horizontalAlignProperty = undefined;
 		}
 		horizontalAlignProperty = CommonUtil.exists(horizontalAlignProperty) ? horizontalAlignProperty : DEFAULT_CSS.HORIZONTAL_ALIGN;
-		dom.style.setProperty("text-align", horizontalAlignProperty);
+		$(dom).css(`text-align`, horizontalAlignProperty);
 	}
 
 	function prepareMaxLength(dom) {
@@ -443,7 +443,7 @@
 			alter = option[String(fixed).toLocaleUpperCase()];
 		}
 		if (!CommonUtil.exists(alter)) {
-			let language = $('html').attr("lang");
+			let language = $(`html`).attr(`lang`);
 			if (!CommonUtil.exists(language)) {
 				language = navigator.language;
 			}
@@ -463,7 +463,7 @@
 	}
 
 	function _NumberUtil() {
-		const RECURSION_FLAG = "recursion_flag";
+		const RECURSION_FLAG = 'recursion_flag';
 
 		function mix2Number(source, recursionFlag) {
 			let result = null;
@@ -769,34 +769,35 @@
 		}
 
 		function setValue(value, doChange, ...selectors) {
+			value = exists(value) ? value : '';
 			for (let selector of selectors) {
 				$(selector).each((_, item) => {
-					if ($(item).is("input:radio, input:checkbox")) {
-						$(item).prop("checked", false);
-						$(item).filter("[value='" + value.toString() + "']").prop("checked", true);
-					} else if ($(item).is("input:text, input:hidden, textarea, select")) {
+					if ($(item).is(`input:radio, input:checkbox`)) {
+						$(item).prop(`checked`, false);
+						$(item).filter(`[value="${value.toString()}"]`).prop(`checked`, true);
+					} else if ($(item).is(`input:text, input:hidden, textarea, select`)) {
 						$(item).val(value);
-					} else if ($(item).is("label, span")) {
+					} else if ($(item).is(`label, span, p`)) {
 						$(item).text(value);
-					} else if ($(item).is("a")) {
-						$(item).attr("href", value);
+					} else if ($(item).is(`a`)) {
+						$(item).attr(`href`, value);
 					}
 					if (doChange === true) {
-						throttle(() => $(item).blur().change(), $(item).attr("id"));
+						throttle(() => $(item).blur().change(), $(item).attr(`id`));
 					}
 				});
 			}
 		}
 
 		function getValue(selector) {
-			if ($(selector).is("input:radio, input:checkbox")) {
-				return $(selector).filter(":checked").val();
-			} else if ($(selector).is("input:text, input:hidden, textarea, select")) {
+			if ($(selector).is(`input:radio, input:checkbox`)) {
+				return $(selector).filter(`:checked`).val();
+			} else if ($(selector).is(`input:text, input:hidden, textarea, select`)) {
 				return $(selector).val();
-			} else if ($(selector).is("label, span")) {
+			} else if ($(selector).is(`label, span`)) {
 				return $(selector).text();
-			} else if ($(selector).is("a")) {
-				return $(selector).attr("href");
+			} else if ($(selector).is(`a`)) {
+				return $(selector).attr(`href`);
 			}
 		}
 

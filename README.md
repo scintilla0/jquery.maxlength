@@ -12,6 +12,10 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.3 (2024-06-23)
+*	Use ES6 template strings.
+*	Minor optimization.
+
 #### 1.7.2 (2024-02-19)
 *	Minor optimization.
 
