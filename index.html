@@ -1,321 +1,400 @@
 <html lang="en">
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>jquery.maxlength.js demo</title>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="robots" content="noindex, nofollow">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
 	<style>
-		.center {
-			text-align: center;
+		.lang-zh {
+			display: none;
+			font-weight: bold;
 		}
 
-		div#container {
-			margin: 30px 80px;
+		body {
+			background-color: #f5f5f5;
+			color: #333;
 		}
-		div#title {
+		h3 {
+			border-bottom: 2px solid #e0e0e0;
+			padding-bottom: 10px;
+		}
+		p {
+			margin-bottom: 20px;
+		}
+		#title {
 			margin-top: 100px;
 			margin-bottom: 50px;
+			text-align: center;
 		}
-		p.brief::before {
-			content: '●';
+		.content {
+			margin-bottom: 60px;
 		}
+
+		.code-container {
+			background-color: #f8f9fa;
+			border: 1px solid #dee2e6;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			height: 100%;
+			border-radius: 8px;
+			box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+		}
+		.code-container pre {
+			background-color: #f8f9fa !important;
+			margin-bottom: 0;
+			width: 100%;
+		}
+		.code-container pre code {
+			background-color: inherit;
+			tab-size: 4;
+		}
+
 		p.brief span.expression {
 			font-weight: bold;
 		}
 		p.brief span.varName {
-			font-family: "system-ui";
 			font-weight: bold;
 			color: #FF6666;
 		}
-		div.item {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			margin-top: -10px;
-			margin-bottom: 10px;
+		.btn {
+			margin: 10px;
 		}
-		div.item input {
-			height: 25px;
-			width: 200px;
-			font-size: 18px;
-		}
-		div.item input::-webkit-input-placeholder {
-			color: #CCCCCC;
-		}
-		div.item pre.code {
-			display: flex;
-			margin-left: 10px;
-			width: 70%;
-			font-size: 16px;
-		}
-		div.item pre.code code {
-			padding-top: 0;
-			padding-bottom: 0;
-			background-color: inherit;
-			font-family: "Bree Serif", serif;
-			tab-size: 4;
-		}
-		table, table tr, table td {
-			border: 1px solid black;
-			border-collapse: collapse;
-		}
-		table.no-border, table.no-border tr, table.no-border td {
-			border: none;
-		}
-		table input {
-			border: none;
-		}
-		pre.expressionTest {
-			font-family: "Bree Serif", serif;
-			font-size: 18px;
-		}
-		label#expressionTestOutput {
+		#expressionTestOutput {
 			font-weight: bold;
 		}
 
 	</style>
 </head>
 <body>
-	<div id="container">
+	<div class="container my-4">
 		<div id="title">
-			<h1 class="center">jquery.maxlength.js</h1>
-			<p class="center">
+			<h1 class="mb-4 align-items-center">jquery.maxlength.js</h1>
+			<p class="lang-en">
 				A plugin for dynamic decimal max length auto-configuration<br>
 				<a href="https://github.com/scintilla0/jquery.maxlength" target="_blank">View and get the source code on Github</a>
+			</p>
+			<p class="lang-zh">
+				提供数字长度限制功能的小插件<br>
+				<a href="https://github.com/scintilla0/jquery.maxlength" target="_blank">在Github上查看源码</a>
 			</p>
 		</div>
 
 		<form autocomplete="off">
 			<div class="subject">
-				<h3>[data-max-length]</h3>
+				<h3 class="mb-3">[data-max-length]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Add the attribute <span class="expression">[data-max-length="<span class="varName">[$minus]</span><span class="varName">[$integral]</span>.<span class="varName">[$fractional]</span>"]</span> to your input element to enable automatic configuration.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="-5.2" placeholder="-12,345.00">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="-5.2"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						为input标签添加属性<span class="expression">[data-max-length="<span class="varName">[$minus]</span><span class="varName">[$integral]</span>.<span class="varName">[$fractional]</span>"]</span>以自动配置数字长度限制．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5.2" placeholder="-12,345.00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="-5.2"&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Omit <span class="varName">[$minus]</span> if negative numbers are not allowed in your input element.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5.2" placeholder="12,345.00">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5.2"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						如果不允许输入负数，则省略配置参数中的负号<span class="varName">[$minus]</span>即可．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5.2" placeholder="12,345.00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5.2"&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						<span class="varName">[$fractional]</span> can be omitted as well if only integral numbers are allowed in your input element.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5" placeholder="12,345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						如果不允许输入小数，则省略配置参数中的小数长度<span class="varName">[$fractional]</span>即可．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5" placeholder="12,345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5"&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Values of <span class="expression">0</span> for the integral limit, as well as any other unreadable parameters, will be reset to the default value of <span class="expression">{integral: 9}</span>.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="0.2" placeholder="123,456,789.00">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="0.2"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						如果配置参数中的整数长度小于0，或指定了任何无效参数，则会被重置为限制9位正整数．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="0.2" placeholder="123,456,789.00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="0.2"&gt;</code></pre>
+						</div>
 					</div>
-					<div class="item">
-						<input type="text" data-max-length="" placeholder="123,456,789">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length=""&gt;</code>
-						</pre>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="" placeholder="123,456,789">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length=""&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>[data-disable-autofill]</h3>
+				<h3 class="mb-3">[data-disable-autofill]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Add the attribute <span class="expression">[data-disable-autofill]</span> to disable fractional autofill.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5.2" data-disable-autofill placeholder="12,345.1">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5.2" data-disable-autofill&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						添加属性<span class="expression">[data-disable-autofill]</span>以禁用自动填充小数．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5.2" data-disable-autofill placeholder="12,345.1">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5.2" data-disable-autofill&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
-
 			<div class="subject">
-				<h3>[data-disable-auto-comma]</h3>
+				<h3 class="mb-3">[data-disable-auto-comma]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Add the attribute <span class="expression">[data-disable-auto-comma]</span> to disable comma autofill.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5" data-disable-auto-comma placeholder="12345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5" data-disable-auto-comma&gt;</code>
-						</pre>
-					</div>
-				</div>
-			</div>
-
-			<div class="subject">
-				<h3>[data-disable-smart-minus]</h3>
-
-				<div class="content">
-					<p class="brief">
-						Press the minus key to conveniently change the plus or minus sign of the number.<br>
-						&emsp;Add the attribute <span class="expression">[data-disable-smart-minus]</span> to disable this mechanism.
+					<p class="brief mb-3 lang-zh">
+						添加属性<span class="expression">[data-disable-auto-comma]</span>以禁用自动填充千分位符．
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="-5" placeholder="-12,345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="-5"&gt;</code>
-						</pre>
-					</div>
-					<div class="item">
-						<input type="text" data-max-length="-5" data-disable-smart-minus placeholder="-12,345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="-5" data-disable-smart-minus&gt;</code>
-						</pre>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5" data-disable-auto-comma placeholder="12345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5" data-disable-auto-comma&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>[data-disable-init-refresh]</h3>
+				<h3 class="mb-3">[data-disable-smart-minus]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
+						Press the minus key to conveniently change the plus or minus sign of the number when <span class="expression">[data-maxlength]</span> is enabled.<br>
+						Add the attribute <span class="expression">[data-disable-smart-minus]</span> to disable this mechanism.
+					</p>
+					<p class="brief mb-3 lang-zh">
+						启用<span class="expression">[data-maxlength]</span>时，通过单次的按键即可快速改变数字的正负号．<br>
+						添加属性<span class="expression">[data-disable-smart-minus]</span>以禁用这种快速取反机制．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5" placeholder="-12,345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="-5"&gt;</code></pre>
+						</div>
+					</div>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5" data-disable-smart-minus placeholder="-12,345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="-5" data-disable-smart-minus&gt;</code></pre>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="subject">
+				<h3 class="mb-3">[data-disable-init-refresh]</h3>
+
+				<div class="content">
+					<p class="brief mb-3 lang-en">
 						All input elements with max length configuration will trigger all its enabled functions when document is ready.<br>
-						&emsp;Add the attribute <span class="expression">[data-disable-init-refresh]</span> to disable this initial fresh process.
+						Add the attribute <span class="expression">[data-disable-init-refresh]</span> to disable this initial fresh process.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5.2" value="12345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						启用了<span class="expression">[data-maxlength]</span>的输入框会在页面加载完成时刷新以加载其已经被配置的功能．<br>
+						添加属性<span class="expression">[data-disable-init-refresh]</span>以在页面加载完成时防止这种刷新．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5.2" value="12345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345"&gt;</code></pre>
+						</div>
 					</div>
-					<div class="item">
-						<input type="text" data-max-length="5.2" value="12345" data-disable-init-refresh>
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345" data-disable-init-refresh&gt;</code>
-						</pre>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5.2" value="12345" data-disable-init-refresh>
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5.2" value="12345" data-disable-init-refresh&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
-
 			<div class="subject">
-				<h3>[data-highlight-minus]</h3>
+				<h3 class="mb-3">[data-highlight-minus]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Add the attribute <span class="expression">[data-highlight-minus="<span class="varName">[$hex]</span>"]</span> to enable highlighting of negative values.<br>
-						&emsp;Uses default <span style="color: #FF0000;">red(#FF0000)</span> color if the hexadecimal color is not assigned.
+						Uses default <span style="color: #FF0000;">red(#FF0000)</span> color if the hexadecimal color is not assigned.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="-5" value="-12345" data-highlight-minus>
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						添加属性<span class="expression">[data-highlight-minus="<span class="varName">[$hex]</span>"]</span>以在数值为负时高亮显示．<br>
+						如果未指定十六进制颜色，则使用<span style="color: #FF0000;">红色(#FF0000)</span>为默认高亮颜色．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5" value="-12345" data-highlight-minus>
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus&gt;</code></pre>
+						</div>
 					</div>
-					<div class="item">
-						<input type="text" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF"&gt;</code>
-						</pre>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="-5" value="-12345" data-highlight-minus="#0099FF"&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>[data-horizontal-align]</h3>
+				<h3 class="mb-3">[data-horizontal-align]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						All input elements with max length configuration will be aligned right side when not focused.<br>
-						&emsp;Add the attribute <span class="expression">[data-horizontal-align="<span class="varName">[$align]</span>"]</span> to customize text align position.
+						Add the attribute <span class="expression">[data-horizontal-align="<span class="varName">[$align]</span>"]</span> to customize text align position.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="5" data-horizontal-align="left" placeholder="12,345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="left"&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						启用了<span class="expression">[data-maxlength]</span>的输入框中的内容会在未聚焦时靠右显示．<br>
+						添加属性<span class="expression">[data-horizontal-align="<span class="varName">[$align]</span>"]</span>以改变未聚焦时的显示位置．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5" data-horizontal-align="left" placeholder="12,345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="left"&gt;</code></pre>
+						</div>
 					</div>
-					<div class="item">
-						<input type="text" data-max-length="5" data-horizontal-align="center" placeholder="12,345">
-						<pre class="code">
-							<code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="center"&gt;</code>
-						</pre>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="5" data-horizontal-align="center" placeholder="12,345">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;input type="text" data-max-length="5" data-horizontal-align="center"&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>[data-sum]</h3>
+				<h3 class="mb-3">[data-sum]</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Add the attribute <span class="expression">[data-sum="<span class="varName">[$selector]</span>"]</span> to enable quick sum calculation on DOM elements matched by the jQuery selector.
 					</p>
-					<div class="item">
-						<table>
-							<tr>
-								<td>
-									<label>item 1</label>
-								</td>
-								<td>
-									<input type="text" class="sumTarget" data-max-length="-5.2">
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label>item 2</label>
-								</td>
-								<td>
-									<input type="text" class="sumTarget" data-max-length="-5.2">
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label>item 3</label>
-								</td>
-								<td>
-									<input type="text" class="sumTarget" data-max-length="-5.2">
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<label>sum</label>
-								</td>
-								<td>
-									<input type="text" data-sum="input.sumTarget" data-max-length="-6.2">
-								</td>
-							</tr>
-						</table>
-						<pre class="code">
-							<code class="language-html">&lt;table&gt;
+					<p class="brief mb-3 lang-zh">
+						添加属性<span class="expression">[data-sum="<span class="varName">[$selector]</span>"]</span>以通过jQuery选择器进行快速求和操作．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<table>
+								<colgroup style="width: 100px;"></colgroup>
+								<colgroup></colgroup>
+								<tr>
+									<td>
+										<label>item 1</label>
+									</td>
+									<td>
+										<input type="text" class="form-control sumTarget" data-max-length="-5.2">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label>item 2</label>
+									</td>
+									<td>
+										<input type="text" class="form-control sumTarget" data-max-length="-5.2">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label>item 3</label>
+									</td>
+									<td>
+										<input type="text" class="form-control sumTarget" data-max-length="-5.2">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label>sum</label>
+									</td>
+									<td>
+										<input type="text" class="form-control" data-sum="input.sumTarget" data-max-length="-6.2">
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;table&gt;
 	&lt;tr&gt;
 		&lt;td&gt;&lt;label&gt;item 1&lt;/label&gt;&lt;/td&gt;
 		&lt;td&gt;&lt;input type="text" class="sumTarget" data-max-length="-5.2"&gt;&lt;/td&gt;
@@ -332,130 +411,199 @@
 		&lt;td&gt;&lt;label&gt;sum&lt;/label&gt;&lt;/td&gt;
 		&lt;td&gt;&lt;input type="text" data-sum="input.sumTarget" data-max-length="-6.2"&gt;&lt;/td&gt;
 	&lt;/tr&gt;
-&lt;/table&gt;</code>
-						</pre>
+&lt;/table&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>$.NumberUtil</h3>
+				<h3 class="mb-3">$.NumberUtil</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						<span class="expression">$.NumberUtil</span> is an extended jQuery decimal calculating utility for use.
 					</p>
-					<div class="item">
-						<pre class="expressionTest">$.NumberUtil.<input type="text" id="expressionTestInput" list="utilMethodList"> -> <label class="brief" id="expressionTestOutput"></label></pre>
-						<datalist id="utilMethodList">
-							<option value="sum"></option>
-							<option value="blendSum"></option>
-							<option value="selectorSum"></option>
-							<option value="product"></option>
-							<option value="productNN"></option>
-							<option value="selectorProduct"></option>
-							<option value="selectorProductNN"></option>
-							<option value="quotient"></option>
-							<option value="round"></option>
-							<option value="floor"></option>
-							<option value="ceil"></option>
-							<option value="mix2Number"></option>
-							<option value="dressNumber"></option>
-							<option value="undressNumber"></option>
-							<option value="drainIntegral"></option>
-							<option value="drainFractional"></option>
-							<option value="fillFractional"></option>
-							<option value="setValue"></option>
-							<option value="getValue"></option>
-						</datalist>
+					<p class="brief mb-3 lang-zh">
+						<span class="expression">$.NumberUtil</span>中包含了若干用于计算的方法以供使用．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-auto">
+							$.NumberUtil.
+						</div>
+						<div class="col-md-2">
+							<input type="text" class="form-control" id="expressionTestInput" list="utilMethodList">
+							<datalist id="utilMethodList">
+								<option value="sum"></option>
+								<option value="blendSum"></option>
+								<option value="selectorSum"></option>
+								<option value="product"></option>
+								<option value="productNN"></option>
+								<option value="selectorProduct"></option>
+								<option value="selectorProductNN"></option>
+								<option value="quotient"></option>
+								<option value="round"></option>
+								<option value="floor"></option>
+								<option value="ceil"></option>
+								<option value="mix2Number"></option>
+								<option value="dressNumber"></option>
+								<option value="undressNumber"></option>
+								<option value="drainIntegral"></option>
+								<option value="drainFractional"></option>
+								<option value="fillFractional"></option>
+								<option value="setValue"></option>
+								<option value="getValue"></option>
+							</datalist>
+						</div>
+						<div class="col-md-auto">
+							->
+						</div>
+						<div class="col-md">
+							<label class="brief" id="expressionTestOutput"></label>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="subject">
-				<h3>Number Format Globalization Support</h3>
+				<h3 class="mb-3 lang-en">Number Format Globalization Support</h3>
+				<h3 class="mb-3 lang-zh">数字格式全球化支持</h3>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						Automatically read your attribute <span class="expression">[lang]</span> of your <span class="expression">[html]</span> tag to select the proper number format.<br>
-						&emsp;If fail, then read the language of user's browser.
-						&emsp;For code consistency, please remain using <span class="expression">[<span class="varName">'.'</span>]</span> as decimal point in attribute <span class="expression">[data-max-length]</span>.
+						If fail, then read the language of user's browser.
+						For code consistency, please remain using <span class="expression">[<span class="varName">'.'</span>]</span> as decimal point in attribute <span class="expression">[data-max-length]</span>.
 					</p>
-					<div class="item">
-						<input type="text" data-max-length="-5.2" value="-12,345.00">
-						<pre class="code">
-							<code class="language-html">&lt;html lang="en"&gt;
-&lt;/html&gt;</code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						该插件会自动根据<span class="expression">[html]</span>的<span class="expression">[lang]</span>标签选择合格的数字格式．<br>
+						如果获取不到，则会尝试获取用户浏览器的语言来进行选择．<br>
+						但为了代码一致性，无论您所在的地区使用哪种数字格式，都请在<span class="expression">[data-max-length]</span>的配置参数中使用<span class="expression">[<span class="varName">'.'</span>]</span>作为小数点．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5.2" value="-12,345.00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;html lang="en"&gt;
+	~
+	&lt;input type="text" data-max-length="-5.2" value="-12,345.00"&gt;
+	~
+&lt;/html&gt;</code></pre>
+						</div>
+					</div>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5.2" value="-12.345,00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;html lang="es"&gt;
+	~
+	&lt;input type="text" data-max-length="-5.2" value="-12.345,00"&gt;
+	~
+&lt;/html&gt;</code></pre>
+						</div>
+					</div>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-3 item-container">
+							<input type="text" class="form-control" data-max-length="-5.2" value="-12 345.00">
+						</div>
+						<div class="col-md-8 offset-md-1 code-container">
+							<pre><code class="language-html">&lt;html lang="fi"&gt;
+	~
+	&lt;input type="text" data-max-length="-5.2" value="-12 345.00"&gt;
+	~
+&lt;/html&gt;</code></pre>
+						</div>
 					</div>
 				</div>
 
 				<div class="content">
-					<p class="brief">
+					<p class="brief mb-3 lang-en">
 						If that doesn't match the correct format, you can invoke <span class="expression">$.NumberUtil.setNumberFormatStandard()</span> in your ready event to select format from <span class="expression">[<span class="varName">"ISO"</span>, <span class="varName">"EN"</span>, <span class="varName">"ES"</span>]</span>.
 					</p>
-					<div class="item">
-						<table class="no-border">
-							<tr>
-								<td>
-									<button type="button" id="numberFormatResetButton" style="margin: 10px;">set number format to</button>
-								</td>
-								<td>
-									<input type="text" id="numberFormatResetInput" value="EN" style="width: 40px;">
-								</td>
-							</tr>
-						</table>
-						<pre class="code">
-							<code class="language-js" id="numberFormatResetChangeCode"></code>
-						</pre>
+					<p class="brief mb-3 lang-zh">
+						如果自动选择的结果与预期不符，可以在页面加载时通过调用<span class="expression">$.NumberUtil.setNumberFormatStandard()</span>方法以从<span class="expression">[<span class="varName">"ISO"</span>, <span class="varName">"EN"</span>, <span class="varName">"ES"</span>]</span>中选择一项作为当前页面的数字格式．
+					</p>
+
+					<div class="item row mb-4 align-items-center">
+						<div class="col-md-4 item-container">
+							<div class="row mb-4 align-items-center">
+								<div class="col-md-auto">
+									<button type="button" class="btn btn-primary" id="numberFormatResetButton">set number format to</button>
+
+								</div>
+								<div class="col-md-3">
+									<input type="text" class="form-control" id="numberFormatResetInput" value="EN">
+
+								</div>
+							</div>
+						</div>
+						<div class="col-md-8 code-container">
+							<pre><code class="language-js" id="numberFormatResetChangeCode"></code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
 
 		</form>
 	</div>
-
 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
 	<script src="jquery.maxlength.js"></script>
 	<script>
+		hljs.highlightAll();
+
+		[`en`, `zh`].forEach(lang => {
+			if (navigator.language.includes(lang)) {
+				$(`.lang-` + lang).show();
+			} else {
+				$(`.lang-` + lang).remove();
+			}
+		});
+
 		$("#expressionTestInput").on("keyup", ({target: dom}) => {
-			let outputSelector = $("#expressionTestOutput");
-			let expression = '$.NumberUtil.' + dom.value;
+			let outputSelector = $(`#expressionTestOutput`);
+			let expression = `$.NumberUtil.${dom.value}`;
 			let result;
 			try {
 				result = eval(expression);
 			} catch (error) {
 				try {
-					result = eval(expression + ')');
+					result = eval(`${expression})`);
 				} catch (error) {
-					result = '';
+					result = ``;
 				}
 			}
 			if (typeof result === "number") {
-				$(outputSelector).css("color", '#0022FF');
-			} else if (typeof result === "string" && result !== '') {
-				$(outputSelector).css("color", '#FF0022');
-				result = '\'' + result + '\'';
+				$(outputSelector).css(`color`, `#0022FF`);
+			} else if (typeof result === "string" && result !== ``) {
+				$(outputSelector).css(`color`, `#FF0022`);
+				result = `'${result}'`;
 			} else {
-				$(outputSelector).css("color", 'inherit');
-				result = '';
+				$(outputSelector).css(`color`, `inherit`);
+				result = ``;
 			}
 			$(outputSelector).text(result);
 		});
 
 		$("#numberFormatResetButton").on("click", () => {
-			$.NumberUtil.setNumberFormatStandard($("#numberFormatResetInput").val());
+			$.NumberUtil.setNumberFormatStandard($(`#numberFormatResetInput`).val());
 		});
 
 		$("#numberFormatResetInput").on("keydown", ({target: dom}) => {
 			setTimeout(() => {
-				$("#numberFormatResetChangeCode").html(
-					'$(document).ready(() => {\n' +
-					'	$.NumberUtil.setNumberFormatStandard(\'' + dom.value + '\');\n' +
-					'});'
+				$(`#numberFormatResetChangeCode`).html(
+					`$(document).ready(() => {\n` +
+					`	$.NumberUtil.setNumberFormatStandard('${dom.value}');\n` +
+					`});`
 				);
-				hljs.highlightAll();
+				hljs.highlightElement($(`#numberFormatResetChangeCode`)[0]);
 			});
 		}).keydown();
 

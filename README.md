@@ -41,7 +41,7 @@ CDN URL(min.js):
 
 #### 1.6.0 (2023-09-29)
 *	Add number format globalization support.
-*	Change attribute name from [data-enable-highlight-minus] to [data-highlight-minus], apologize for the inconvenience.
+*	`IMPORTANT` Change attribute name from ~~[data-enable-highlight-minus]~~ to [data-highlight-minus], apologize for the inconvenience.
 *	[data-highlight-minus] can recognize hex without '#' now, but not recommended.
 
 #### 1.5.8 (2023-07-14)
