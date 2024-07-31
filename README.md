@@ -12,6 +12,13 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.4 (2024-07-31)
+*	Add $.NumberUtil.areSameNumber().
+*	Add [data-product], [data-difference], [data-quotient].
+*	[data-sum] causing permanent cycle triggering event fixed.
+*	[data-sum] event now automatically round and crop out the integer part that exceed the length limit.
+*	Minor modification of variable names.
+
 #### 1.7.3 (2024-06-23)
 *	Use ES6 template strings.
 *	Minor optimization.

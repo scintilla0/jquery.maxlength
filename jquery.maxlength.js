@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.3 - 2024-06-23
+ * jquery.maxlength.js - version 1.7.4 - 2024-07-31
  * @copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -16,19 +16,23 @@
  * Add the attribute [data-disable-init-refresh] to disable the initial refresh.
  * Add the attribute [data-enable-highlight-minus="$hex"] to enable highlighting of negative values in either default red or the assigned hexadecimal color.
  * Add the attribute [data-horizontal-align="$align"] to customize text align position.
- * Add the attribute [data-sum="$selector"] to enable quick sum calculation on DOM elements matched by the jQuery selector, e.g. [data-sum="input.score"].
+ * Add the attribute [data-sum="$selector"] or [data-product="$selector"] to enable quick sum or product calculation on
+ * 	DOM elements matched by the jQuery selector, e.g. [data-sum="input.score"].
+ * Add the attribute [data-difference="$minuendSelector,$subtrahendSelector"] or [data-product="$dividendSelector,$divisorSelector"] to enable quick sum or product calculation on
+ * 	DOM elements matched by the jQuery selector, e.g. [data-difference="#minuend,.subtrahend"].
  * $.NumberUtil is an extended jQuery calculating utility for use.
  * Use [$.NumberUtil.setNumberFormatStandard()] to choose number format manually from [ISO, EN, ES].
  */
 (function($) {
-	const GLOBALIZATION_ALTERNATIVE = {DOT: '.', COMMA: ',', SPACE: ' ', VALID_CHARACTER: '-0123456789',
+	const GLOBAL_ALTER = {DOT: '.', COMMA: ',', SPACE: ' ', VALID_CHARACTER: '-0123456789',
 			DOT_KEY: [110, 190], COMMA_KEY: [188], SPACE_KEY: [32]};
 	const CORE = {VALID_CHARACTER: null, DOT: null, COMMA: null, MINUS: '-', ZERO: '0', EMPTY: '',
 			INTEGRAL: "integral", FRACTIONAL: "fractional", ALLOW_MINUS: "minus",
 			DEFAULT_ID: '_max_length_no_', MAX_LENGTH: "data-max-length", INIT_FRESH: "data-disable-init-refresh",
 			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma", SMART_MINUS: "data-disable-smart-minus",
-			HIGHLIGHT_MINUS: "data-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align", SUM: "data-sum",
-			HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
+			HIGHLIGHT_MINUS: "data-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align",
+			SUM: "data-sum", PRODUCT: "data-product", DIFFERENCE: "data-difference", QUOTIENT: "data-quotient",
+			CEIL: "data-ceil", FLOOR:"data-floor", HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
 	const KEY = {DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
 			NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
 			FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
@@ -37,33 +41,38 @@
 	const DEFAULT_CSS = {HORIZONTAL_ALIGN: 'right', MINUS_COLOR: '#FF0000'};
 	const DEFAULT_CANCEL_LENGTH = {integral: 9};
 	const HORIZONTAL_ALIGN_OPTION = ['left', 'center', 'right', 'inherit'];
+	const LANG_CODE = {EN: ['ar', 'en', 'iw', 'ja', 'ko', 'zh'],
+			ES: ['da', 'de', 'el', 'es', 'fr', 'it', 'nl', 'pt', 'ru', 'sl', 'sv', 'tr']};
 	const CommonUtil = _CommonUtil();
-	globalizationAlternative();
+	globalAlter();
 	$.extend({NumberUtil: _NumberUtil()});
 
 	let maxLengthBuffer = {};
 	let contentBuffer;
 
-	let selector = `[${CORE.MAX_LENGTH}]`;
-	$(selector).each((_, item) => {
+	let mainSelector = `[${CORE.MAX_LENGTH}]`;
+	$(mainSelector).each((_, item) => {
 		prepareStyle(item);
 		prepareMaxLength(item);
 	});
 	$(document)
-			.on("dragstart", selector, dragstartAction)
-			.on("keydown", selector, keydownAction)
-			.on("focus", selector, focusAction)
-			.on("blur", selector, blurAction)
-			.on("compositionstart", selector, compositionstartAction)
-			.on("compositionend", selector, compositionendAction);
+			.on("dragstart", mainSelector, dragstartAction)
+			.on("keydown", mainSelector, keydownAction)
+			.on("focus", mainSelector, focusAction)
+			.on("blur", mainSelector, blurAction)
+			.on("compositionstart", mainSelector, compositionstartAction)
+			.on("compositionend", mainSelector, compositionendAction);
 	initRefresh();
 
 	function initRefresh(changeAction) {
 		if (CommonUtil.exists(changeAction)) {
 			changeAction.apply();
 		}
-		$(`${selector}:not([${CORE.INIT_FRESH}])`).each(initFocusAndBlur);
+		$(`${mainSelector}:not([${CORE.INIT_FRESH}])`).each(initFocusAndBlur);
 		$(`[${CORE.SUM}]`).each(sum);
+		$(`[${CORE.PRODUCT}]`).each(product);
+		$(`[${CORE.DIFFERENCE}]`).each(difference);
+		$(`[${CORE.QUOTIENT}]`).each(quotient);
 	}
 
 	function dragstartAction({target: dom}) {
@@ -187,13 +196,13 @@
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
 		}
-		if (source.startsWith(GLOBALIZATION_ALTERNATIVE.DOT) || source.endsWith(GLOBALIZATION_ALTERNATIVE.DOT) ||
+		if (source.startsWith(GLOBAL_ALTER.DOT) || source.endsWith(GLOBAL_ALTER.DOT) ||
 				(!source.startsWith(CORE.MINUS) && source.includes(CORE.MINUS))) {
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
 		}
 		let absSource = source.includes(CORE.MINUS) ? source.substring(1) : source;
-		let sourceSep = absSource.split(GLOBALIZATION_ALTERNATIVE.DOT);
+		let sourceSep = absSource.split(GLOBAL_ALTER.DOT);
 		if (isNaN(Number(sourceSep[0])) || (absSource === CORE.ZERO && isNaN(Number(sourceSep[1])))) {
 			maxLengthBuffer[id] = DEFAULT_CANCEL_LENGTH;
 			return;
@@ -203,7 +212,7 @@
 		if (maxLength[CORE.INTEGRAL] === 0) {
 			maxLength[CORE.INTEGRAL] = DEFAULT_CANCEL_LENGTH[CORE.INTEGRAL];
 		}
-		if (absSource.indexOf(GLOBALIZATION_ALTERNATIVE.DOT) !== -1 && sourceSep[1] !== CORE.ZERO) {
+		if (absSource.indexOf(GLOBAL_ALTER.DOT) !== -1 && sourceSep[1] !== CORE.ZERO) {
 			maxLength[CORE.FRACTIONAL] = Number(sourceSep[1]);
 		}
 		if (source.startsWith(CORE.MINUS)) {
@@ -428,15 +437,69 @@
 	function sum(_, item) {
 		let selector = $(item).attr(CORE.SUM);
 		$(document).on("change", selector, () => {
-			CommonUtil.setValue($.NumberUtil.selectorSum(selector), true, item);
+			setValueWithMaxlengthCap(item, $.NumberUtil.selectorSum(selector));
 		});
 	}
 
-	function globalizationAlternative(fixed) {
+	function product(_, item) {
+		let selector = $(item).attr(CORE.PRODUCT);
+		$(document).on("change", selector, () => {
+			setValueWithMaxlengthCap(item, $.NumberUtil.selectorProduct(selector));
+		});
+	}
+
+	function difference(_, item) {
+		let selectors = $(item).attr(CORE.DIFFERENCE).split(',');
+		selectorCountCheck(selectors);
+		$(document).on("change", `${selectors[0]},${selectors[1]}`, () => {
+			setValueWithMaxlengthCap(item, $.NumberUtil.blendSum($.NumberUtil.getValue(selectors[0]), false, $.NumberUtil.selectorSum(selectors[1])));
+		});
+	}
+
+	function quotient(_, item) {
+		let selectors = $(item).attr(CORE.QUOTIENT).split(',');
+		selectorCountCheck(selectors);
+		$(document).on("change", `${selectors[0]},${selectors[1]}`, (_, test) => {
+			setValueWithMaxlengthCap(item, $.NumberUtil.quotient($.NumberUtil.getValue(selectors[0]), $.NumberUtil.selectorProduct(selectors[1])));
+		});
+	}
+
+	function selectorCountCheck(selectors) {
+		if (selectors.length !== 2) {
+			throw `Invalid number of selectors. Expected: 2. Received: ${selectors.length}.`;
+		} else if ($(selectors[0]).length !== 1) {
+			throw `There should be only 1 minuend. Received: ${$(selectors[0]).length}`;
+		}
+	}
+
+	function setValueWithMaxlengthCap(item, value) {
+		let maxlength = maxLengthBuffer[item.id];
+		if (!dataSetAbsent(item, CORE.CEIL)) {
+			value = $.NumberUtil.ceil(value, maxlength[CORE.FRACTIONAL]);
+		} else if (!dataSetAbsent(item, CORE.FLOOR)) {
+			value = $.NumberUtil.floor(value, maxlength[CORE.FRACTIONAL]);
+		} else {
+			value = $.NumberUtil.round(value, maxlength[CORE.FRACTIONAL]);
+		}
+        value = value.toString();
+        let hasMinus = value.toString().includes(CORE.MINUS);
+        value = value.replace(CORE.MINUS, CORE.EMPTY);
+        let integralLength = value.split(CORE.DOT)[0].length;
+        if (integralLength > maxlength[CORE.INTEGRAL]) {
+            value = value.substring(integralLength - maxlength[CORE.INTEGRAL]);
+        }
+        if (hasMinus) {
+            value = CORE.MINUS + value;
+        }
+		CommonUtil.setValue(value, false, item);
+		$(item).each(initFocusAndBlur);
+	}
+
+	function globalAlter(fixed) {
 		let option = {
-			ISO: {DOT: GLOBALIZATION_ALTERNATIVE.DOT, DOT_KEY: GLOBALIZATION_ALTERNATIVE.DOT_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.SPACE},
-			EN: {DOT: GLOBALIZATION_ALTERNATIVE.DOT, DOT_KEY: GLOBALIZATION_ALTERNATIVE.DOT_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.COMMA},
-			ES: {DOT: GLOBALIZATION_ALTERNATIVE.COMMA, DOT_KEY: GLOBALIZATION_ALTERNATIVE.COMMA_KEY, COMMA: GLOBALIZATION_ALTERNATIVE.DOT}
+			ISO: {DOT: GLOBAL_ALTER.DOT, DOT_KEY: GLOBAL_ALTER.DOT_KEY, COMMA: GLOBAL_ALTER.SPACE},
+			EN: {DOT: GLOBAL_ALTER.DOT, DOT_KEY: GLOBAL_ALTER.DOT_KEY, COMMA: GLOBAL_ALTER.COMMA},
+			ES: {DOT: GLOBAL_ALTER.COMMA, DOT_KEY: GLOBAL_ALTER.COMMA_KEY, COMMA: GLOBAL_ALTER.DOT}
 		};
 		let alter;
 		if (CommonUtil.exists(fixed)) {
@@ -448,16 +511,16 @@
 				language = navigator.language;
 			}
 			let containsLanguage = codeArray => codeArray.some(code => language.startsWith(code));
-			if (containsLanguage(['ar', 'en', 'ja', 'iw', 'ko', 'zh'])) {
+			if (containsLanguage(LANG_CODE.EN)) {
 				alter = option.EN;
-			} else if (containsLanguage(['da', 'de', 'el', 'es', 'it', 'nl', 'pt', 'ru', 'sv', 'tr', 'sl', 'fr'])) {
+			} else if (containsLanguage(LANG_CODE.ES)) {
 				alter = option.ES;
 			} else {
 				alter = option.ISO;
 			}
 		}
 		KEY.DOT_KEY = alter.DOT_KEY;
-		CORE.VALID_CHARACTER = alter.DOT + GLOBALIZATION_ALTERNATIVE.VALID_CHARACTER;
+		CORE.VALID_CHARACTER = alter.DOT + GLOBAL_ALTER.VALID_CHARACTER;
 		CORE.DOT = alter.DOT;
 		CORE.COMMA = alter.COMMA;
 	}
@@ -465,7 +528,11 @@
 	function _NumberUtil() {
 		const RECURSION_FLAG = 'recursion_flag';
 
-		function mix2Number(source, recursionFlag) {
+		function mix2Number(source) {
+			return coreMix2Number(source);
+		}
+
+		/* private */ function coreMix2Number(source, recursionFlag) {
 			let result = null;
 			if (CommonUtil.exists(source)) {
 				if (typeof source === "number") {
@@ -473,8 +540,8 @@
 				} else if (typeof source === "string") {
 					let trimmedSource = source.trim().replaceAll(CORE.COMMA, CORE.EMPTY);
 					if (!CommonUtil.isBlank(trimmedSource)) {
-						if (CORE.DOT !== GLOBALIZATION_ALTERNATIVE.DOT) {
-							trimmedSource = trimmedSource.replaceAll(CORE.DOT, GLOBALIZATION_ALTERNATIVE.DOT);
+						if (CORE.DOT !== GLOBAL_ALTER.DOT) {
+							trimmedSource = trimmedSource.replaceAll(CORE.DOT, GLOBAL_ALTER.DOT);
 						}
 						trimmedSource = Number(trimmedSource);
 						if (!isNaN(trimmedSource)) {
@@ -490,6 +557,10 @@
 				}
 			}
 			return result;
+		}
+
+		function areSameNumber(source1, source2) {
+			return mix2Number(source1) === mix2Number(source2);
 		}
 
 		/* private */ function getDecimalPlace(source) {
@@ -509,11 +580,11 @@
 			let decimalPlace1 = getDecimalPlace(addend1);
 			let decimalPlace2 = getDecimalPlace(addend2);
 			let maxDecimalPlace = Math.max(decimalPlace1, decimalPlace2);
-			let decimalPlaceMultiplicator1 = Math.pow(10, maxDecimalPlace - decimalPlace1);
-			let decimalPlaceMultiplicator2 = Math.pow(10, maxDecimalPlace - decimalPlace2);
-			let decimalPlaceMultiplicator = Math.pow(10, maxDecimalPlace);
-			return (removeDecimalPoint(addend1) * decimalPlaceMultiplicator1 +
-					removeDecimalPoint(addend2) * decimalPlaceMultiplicator2) / decimalPlaceMultiplicator;
+			let decimalPlaceFactor1 = Math.pow(10, maxDecimalPlace - decimalPlace1);
+			let decimalPlaceFactor2 = Math.pow(10, maxDecimalPlace - decimalPlace2);
+			let decimalPlaceFactor = Math.pow(10, maxDecimalPlace);
+			return (removeDecimalPoint(addend1) * decimalPlaceFactor1 +
+					removeDecimalPoint(addend2) * decimalPlaceFactor2) / decimalPlaceFactor;
 		}
 
 		function sum(...addends) {
@@ -559,70 +630,70 @@
 			return result;
 		}
 
-		/* private */ function coreProduct(multiplicator1, multiplicator2) {
-			let decimalPlaceMultiplicator = Math.pow(10, getDecimalPlace(multiplicator1) + getDecimalPlace(multiplicator2));
-			return (removeDecimalPoint(multiplicator1) * removeDecimalPoint(multiplicator2)) / decimalPlaceMultiplicator;
+		/* private */ function coreProduct(factor1, factor2) {
+			let decimalPlaceFactor = Math.pow(10, getDecimalPlace(factor1) + getDecimalPlace(factor2));
+			return (removeDecimalPoint(factor1) * removeDecimalPoint(factor2)) / decimalPlaceFactor;
 		}
 
-		function product(...multiplicators) {
+		function product(...factors) {
 			let result = null;
-			for (let multiplicator of multiplicators) {
-				multiplicator = mix2Number(multiplicator);
-				if (multiplicator !== null) {
+			for (let factor of factors) {
+				factor = mix2Number(factor);
+				if (factor !== null) {
 					if (result === null) {
 						result = 1;
 					}
-					result = coreProduct(result, multiplicator);
+					result = coreProduct(result, factor);
 				}
 			}
 			return result;
 		}
 
-		function productNoticeNull(...multiplicators) {
+		function productNoticeNull(...factors) {
 			let result = 1;
-			for (let multiplicator of multiplicators) {
-				multiplicator = mix2Number(multiplicator);
-				if (multiplicator === null) {
-					multiplicator = 0;
+			for (let factor of factors) {
+				factor = mix2Number(factor);
+				if (factor === null) {
+					factor = 0;
 				}
-				result = coreProduct(result, multiplicator);
+				result = coreProduct(result, factor);
 			}
 			return result;
 		}
 
-		function selectorProduct(...multiplicatorsSelectors) {
+		function selectorProduct(...factorsSelectors) {
 			let result = null;
-			for (let multiplicatorsSelector of multiplicatorsSelectors) {
-				$(multiplicatorsSelector).each((_, item) => {
-					let multiplicator = mix2Number($(item).val());
-					if (multiplicator !== null) {
+			for (let factorsSelector of factorsSelectors) {
+				$(factorsSelector).each((_, item) => {
+					let factor = mix2Number($(item).val());
+					if (factor !== null) {
 						if (result === null) {
 							result = 1;
 						}
-						result = coreProduct(result, multiplicator);
+						result = coreProduct(result, factor);
 					}
 				});
 			}
 			return result;
 		}
 
-		function selectorProductNoticeNull(...multiplicatorsSelectors) {
+		function selectorProductNoticeNull(...factorsSelectors) {
 			let result = 1;
-			for (let multiplicatorsSelector of multiplicatorsSelectors) {
-				$(multiplicatorsSelector).each((_, item) => {
-					let multiplicator = mix2Number($(item).val());
-					if (multiplicator === null) {
-						multiplicator = 0;
+			for (let factorsSelector of factorsSelectors) {
+				$(factorsSelector).each((_, item) => {
+					let factor = mix2Number($(item).val());
+					if (factor === null) {
+						factor = 0;
 					}
-					result = coreProduct(result, multiplicator);
+					result = coreProduct(result, factor);
 				});
 			}
 			return result;
 		}
 
 		/* private */ function coreQuotient(dividend, divisor) {
-			let decimalPlaceMultiplicator = Math.pow(10, getDecimalPlace(dividend) - getDecimalPlace(divisor));
-			return (removeDecimalPoint(dividend) / removeDecimalPoint(divisor)) / decimalPlaceMultiplicator;
+			let decimalPlaceFactor = Math.pow(10, getDecimalPlace(dividend) - getDecimalPlace(divisor));
+			return (removeDecimalPoint(dividend) / removeDecimalPoint(divisor)) / decimalPlaceFactor;
 		}
 
 		function quotient(dividend, divisor) {
@@ -635,10 +706,10 @@
 		}
 
 		/* private */ function coreRounding(source, decimalPlace, roundingOperation) {
-			let multiplicator = Math.pow(10, decimalPlace);
-			let result = source * multiplicator;
+			let factor = Math.pow(10, decimalPlace);
+			let result = source * factor;
 			result = roundingOperation.apply(null, [result]);
-			return result / multiplicator;
+			return result / factor;
 		}
 
 		function round(source, decimalPlace = 0) {
@@ -720,7 +791,7 @@
 		}
 
 		function setNumberFormatStandard(standard) {
-			initRefresh(() => globalizationAlternative(standard));
+			initRefresh(() => globalAlter(standard));
 		}
 
 		return {
@@ -741,6 +812,7 @@
 			drainIntegral: drainIntegral,
 			drainFractional: drainFractional,
 			fillFractional: fillFractional,
+			areSameNumber: areSameNumber,
 			setValue: CommonUtil.setValue,
 			getValue: CommonUtil.getValue,
 			setNumberFormatStandard: setNumberFormatStandard
