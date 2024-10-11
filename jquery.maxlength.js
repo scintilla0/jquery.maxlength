@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.4 - 2024-07-31
+ * jquery.maxlength.js - version 1.7.5 - 2024-10-11
  * @copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -481,17 +481,17 @@
 		} else {
 			value = $.NumberUtil.round(value, maxlength[CORE.FRACTIONAL]);
 		}
-        value = value.toString();
-        let hasMinus = value.toString().includes(CORE.MINUS);
-        value = value.replace(CORE.MINUS, CORE.EMPTY);
-        let integralLength = value.split(CORE.DOT)[0].length;
-        if (integralLength > maxlength[CORE.INTEGRAL]) {
-            value = value.substring(integralLength - maxlength[CORE.INTEGRAL]);
-        }
-        if (hasMinus) {
-            value = CORE.MINUS + value;
-        }
-		CommonUtil.setValue(value, false, item);
+		value = value.toString();
+		let hasMinus = value.toString().includes(CORE.MINUS);
+		value = value.replace(CORE.MINUS, CORE.EMPTY);
+		let integralLength = value.split(CORE.DOT)[0].length;
+		if (integralLength > maxlength[CORE.INTEGRAL]) {
+			value = value.substring(integralLength - maxlength[CORE.INTEGRAL]);
+		}
+		if (hasMinus) {
+			value = CORE.MINUS + value;
+		}
+		CommonUtil.setValue(value, item);
 		$(item).each(initFocusAndBlur);
 	}
 
@@ -840,7 +840,7 @@
 			}
 		}
 
-		function setValue(value, doChange, ...selectors) {
+		function setValue(value, ...selectors) {
 			value = exists(value) ? value : '';
 			for (let selector of selectors) {
 				$(selector).each((_, item) => {
@@ -853,9 +853,6 @@
 						$(item).text(value);
 					} else if ($(item).is(`a`)) {
 						$(item).attr(`href`, value);
-					}
-					if (doChange === true) {
-						throttle(() => $(item).blur().change(), $(item).attr(`id`));
 					}
 				});
 			}

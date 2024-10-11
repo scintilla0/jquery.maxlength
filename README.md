@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.5 (2024-10-11)
+*	$.NumberUtil.setValue() cannot trigger jQuery change event.
+
 #### 1.7.4 (2024-07-31)
 *	Add $.NumberUtil.areSameNumber().
 *	Add [data-product], [data-difference], [data-quotient].
