@@ -1,6 +1,6 @@
 /*!
- * jquery.maxlength.js - version 1.7.5 - 2024-10-11
- * @copyright (c) 2023-2024 scintilla0 (https://github.com/scintilla0)
+ * jquery.maxlength.js - version 1.7.6 - 2025-01-02
+ * @copyright (c) 2023-2025 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
  * @license GPL2 License http://www.gnu.org/licenses/gpl.html
@@ -459,7 +459,7 @@
 	function quotient(_, item) {
 		let selectors = $(item).attr(CORE.QUOTIENT).split(',');
 		selectorCountCheck(selectors);
-		$(document).on("change", `${selectors[0]},${selectors[1]}`, (_, test) => {
+		$(document).on("change", `${selectors[0]},${selectors[1]}`, () => {
 			setValueWithMaxlengthCap(item, $.NumberUtil.quotient($.NumberUtil.getValue(selectors[0]), $.NumberUtil.selectorProduct(selectors[1])));
 		});
 	}
@@ -826,18 +826,6 @@
 
 		function isBlank(string) {
 			return !(exists(string) && string.trim() !== '');
-		}
-
-		let throttleTimer = {};
-
-		function throttle(callback, domId, delay = 0) {
-			if (throttleTimer[domId] == null) {
-				throttleTimer[domId] = setTimeout(() => throttleTimer[domId] = null, delay);
-				setTimeout(() => callback.apply());
-			} else {
-				clearTimeout(throttleTimer[domId]);
-				throttleTimer[domId] = setTimeout(() => throttleTimer[domId] = null, delay);
-			}
 		}
 
 		function setValue(value, ...selectors) {

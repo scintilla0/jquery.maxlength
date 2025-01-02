@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.6 (2025-01-02)
+*	Remove unused variables and functions.
+
 #### 1.7.5 (2024-10-11)
 *	$.NumberUtil.setValue() cannot trigger jQuery change event.
 
