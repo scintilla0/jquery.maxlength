@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.6 - 2025-01-02
+ * jquery.maxlength.js - version 1.7.7 - 2025-01-14
  * @copyright (c) 2023-2025 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -32,7 +32,8 @@
 			AUTOFILL: "data-disable-autofill", AUTO_COMMA: "data-disable-auto-comma", SMART_MINUS: "data-disable-smart-minus",
 			HIGHLIGHT_MINUS: "data-highlight-minus", HORIZONTAL_ALIGN: "data-horizontal-align",
 			SUM: "data-sum", PRODUCT: "data-product", DIFFERENCE: "data-difference", QUOTIENT: "data-quotient",
-			CEIL: "data-ceil", FLOOR:"data-floor", HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
+			PERCENT: "data-percent", CEIL: "data-ceil", FLOOR:"data-floor", INNER_CHANGE: "inner-change",
+			HEX_REGEX: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/};
 	const KEY = {DOT_KEY: null, MINUS_KEY: [109, 189], COMMON_KEY: {V: 86, X: 88},
 			NUMBER_KEY: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105],
 			FUNCTION_KEY: {F5: 116, ESC: 27, BACKSPACE: 8, DEL: 46, TAB: 9, ENTER: 13, ENTER_SUB: 108,
@@ -69,10 +70,11 @@
 			changeAction.apply();
 		}
 		$(`${mainSelector}:not([${CORE.INIT_FRESH}])`).each(initFocusAndBlur);
-		$(`[${CORE.SUM}]`).each(sum);
-		$(`[${CORE.PRODUCT}]`).each(product);
-		$(`[${CORE.DIFFERENCE}]`).each(difference);
-		$(`[${CORE.QUOTIENT}]`).each(quotient);
+		CommonUtil.initAndDeployListener(`[${CORE.SUM}]`, sum);
+		CommonUtil.initAndDeployListener(`[${CORE.PRODUCT}]`, product);
+		CommonUtil.initAndDeployListener(`[${CORE.DIFFERENCE}]`, difference);
+		CommonUtil.initAndDeployListener(`[${CORE.QUOTIENT}]`, quotient);
+		CommonUtil.initAndDeployListener(`[${CORE.PERCENT}]`, percent);
 	}
 
 	function dragstartAction({target: dom}) {
@@ -145,7 +147,7 @@
 	}
 
 	function initFocusAndBlur() {
-		let value = $.NumberUtil.drainIntegral(this.value);
+		let value = $.NumberUtil.drainIntegral(CommonUtil.getValue($(this)));
 		if (dataSetAbsent(this, CORE.AUTOFILL)) {
 			value = $.NumberUtil.drainFractional(value);
 			value = $.NumberUtil.fillFractional(value, getMaxLength(this)[CORE.FRACTIONAL]);
@@ -164,7 +166,7 @@
 				$(this).css(`color`, CORE.EMPTY);
 			}
 		}
-		this.value = value;
+		CommonUtil.setValue(value, $(this));
 	}
 
 	function compositionstartAction({target: dom}) {
@@ -436,22 +438,22 @@
 
 	function sum(_, item) {
 		let selector = $(item).attr(CORE.SUM);
-		$(document).on("change", selector, () => {
+		$(document).on("change " + CORE.INNER_CHANGE, selector, () => {
 			setValueWithMaxlengthCap(item, $.NumberUtil.selectorSum(selector));
 		});
 	}
 
 	function product(_, item) {
 		let selector = $(item).attr(CORE.PRODUCT);
-		$(document).on("change", selector, () => {
-			setValueWithMaxlengthCap(item, $.NumberUtil.selectorProduct(selector));
+		$(document).on("change " + CORE.INNER_CHANGE, selector, () => {
+			setValueWithMaxlengthCap(item, $.NumberUtil.selectorProductNN(selector));
 		});
 	}
 
 	function difference(_, item) {
 		let selectors = $(item).attr(CORE.DIFFERENCE).split(',');
 		selectorCountCheck(selectors);
-		$(document).on("change", `${selectors[0]},${selectors[1]}`, () => {
+		$(document).on("change " + CORE.INNER_CHANGE, `${selectors[0]},${selectors[1]}`, () => {
 			setValueWithMaxlengthCap(item, $.NumberUtil.blendSum($.NumberUtil.getValue(selectors[0]), false, $.NumberUtil.selectorSum(selectors[1])));
 		});
 	}
@@ -459,8 +461,17 @@
 	function quotient(_, item) {
 		let selectors = $(item).attr(CORE.QUOTIENT).split(',');
 		selectorCountCheck(selectors);
-		$(document).on("change", `${selectors[0]},${selectors[1]}`, () => {
+		$(document).on("change " + CORE.INNER_CHANGE, `${selectors[0]},${selectors[1]}`, () => {
 			setValueWithMaxlengthCap(item, $.NumberUtil.quotient($.NumberUtil.getValue(selectors[0]), $.NumberUtil.selectorProduct(selectors[1])));
+		});
+	}
+
+	function percent(_, item) {
+		let selectors = $(item).attr(CORE.PERCENT).split(',');
+		selectorCountCheck(selectors);
+		$(document).on("change " + CORE.INNER_CHANGE, `${selectors[0]},${selectors[1]}`, () => {
+			setValueWithMaxlengthCap(item, $.NumberUtil.quotient($.NumberUtil.product($.NumberUtil.getValue(selectors[0]), 100),
+					$.NumberUtil.selectorProductNN(selectors[1])));
 		});
 	}
 
@@ -468,12 +479,15 @@
 		if (selectors.length !== 2) {
 			throw `Invalid number of selectors. Expected: 2. Received: ${selectors.length}.`;
 		} else if ($(selectors[0]).length !== 1) {
-			throw `There should be only 1 minuend. Received: ${$(selectors[0]).length}`;
+			throw `There should be only 1 minuend/dividend. Received: ${$(selectors[0]).length}`;
 		}
 	}
 
 	function setValueWithMaxlengthCap(item, value) {
 		let maxlength = maxLengthBuffer[item.id];
+		if (!CommonUtil.exists(maxlength) && dataSetAbsent($(`[id="${item.id}"]`), CORE.MAX_LENGTH)) {
+			maxlength = DEFAULT_CANCEL_LENGTH;
+		}
 		if (!dataSetAbsent(item, CORE.CEIL)) {
 			value = $.NumberUtil.ceil(value, maxlength[CORE.FRACTIONAL]);
 		} else if (!dataSetAbsent(item, CORE.FLOOR)) {
@@ -482,7 +496,7 @@
 			value = $.NumberUtil.round(value, maxlength[CORE.FRACTIONAL]);
 		}
 		value = value.toString();
-		let hasMinus = value.toString().includes(CORE.MINUS);
+		let hasMinus = value.includes(CORE.MINUS);
 		value = value.replace(CORE.MINUS, CORE.EMPTY);
 		let integralLength = value.split(CORE.DOT)[0].length;
 		if (integralLength > maxlength[CORE.INTEGRAL]) {
@@ -493,6 +507,7 @@
 		}
 		CommonUtil.setValue(value, item);
 		$(item).each(initFocusAndBlur);
+		$(item).trigger(CORE.INNER_CHANGE);
 	}
 
 	function globalAlter(fixed) {
@@ -621,7 +636,7 @@
 			let result = 0;
 			for (let addendsSelector of addendsSelectors) {
 				$(addendsSelector).each((_, item) => {
-					let addend = mix2Number($(item).val());
+					let addend = mix2Number(CommonUtil.getValue($(item)));
 					if (addend !== null) {
 						result = coreSum(result, addend);
 					}
@@ -665,7 +680,7 @@
 			let result = null;
 			for (let factorsSelector of factorsSelectors) {
 				$(factorsSelector).each((_, item) => {
-					let factor = mix2Number($(item).val());
+					let factor = mix2Number(CommonUtil.getValue($(item)));
 					if (factor !== null) {
 						if (result === null) {
 							result = 1;
@@ -681,7 +696,7 @@
 			let result = 1;
 			for (let factorsSelector of factorsSelectors) {
 				$(factorsSelector).each((_, item) => {
-					let factor = mix2Number($(item).val());
+					let factor = mix2Number(CommonUtil.getValue($(item)));
 					if (factor === null) {
 						factor = 0;
 					}
@@ -828,6 +843,42 @@
 			return !(exists(string) && string.trim() !== '');
 		}
 
+		function initAndDeployListener(selector, event) {
+			applyEventGroupByName(selector, event);
+			deployNodeAppendListener(selector, event);
+		}
+
+		function applyEventGroupByName(selector, event) {
+			let buffer = {};
+			let noneNamedIndex = 0;
+			$(selector).each((_, item) => {
+				let key = $(item).attr(`name`);
+				if (!CommonUtil.exists(key)) {
+					key = noneNamedIndex ++;
+				}
+				if (!CommonUtil.exists(buffer[key])) {
+					buffer[key] = $();
+				}
+				buffer[key] = buffer[key].add(item);
+			});
+			for (let index in buffer) {
+				for (let item of buffer[index]) {
+					event.apply(null, [null, item]);
+				}
+			}
+		}
+
+		function deployNodeAppendListener(selector, event) {
+			new MutationObserver(mutationList => {
+				for (let mutation of mutationList) {
+					for (let node of mutation.addedNodes) {
+						let targetNode = $(node).is(selector) ? $(node) : $(node).find(selector);
+						applyEventGroupByName(targetNode, event);
+					}
+				}
+			}).observe(document.body, {childList: true, subtree: true});
+		}
+
 		function setValue(value, ...selectors) {
 			value = exists(value) ? value : '';
 			for (let selector of selectors) {
@@ -861,6 +912,7 @@
 		return {
 			exists: exists,
 			isBlank: isBlank,
+			initAndDeployListener: initAndDeployListener,
 			setValue: setValue,
 			getValue: getValue
 		};
