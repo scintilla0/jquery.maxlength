@@ -12,7 +12,7 @@ CDN URL(min.js):
 
 ### Change log
 
-#### 1.7.7 (2025-01-13)
+#### 1.7.7 (2025-01-14)
 *	[data-sum]... event now can work properly with no [data-max-length].
 *	[data-sum]... event now can work properly on non-input elements.
 *	[data-sum]... event now can work properly when elements are appended after document is ready.
