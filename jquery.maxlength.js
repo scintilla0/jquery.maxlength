@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.7 - 2025-01-14
+ * jquery.maxlength.js - version 1.7.8 - 2025-10-16
  * @copyright (c) 2023-2025 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -862,9 +862,7 @@
 				buffer[key] = buffer[key].add(item);
 			});
 			for (let index in buffer) {
-				for (let item of buffer[index]) {
-					event.apply(null, [null, item]);
-				}
+				buffer[index].each((_, item) => event.apply(null, [null, item]));
 			}
 		}
 

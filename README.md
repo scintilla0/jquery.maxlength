@@ -12,6 +12,9 @@ CDN URL(min.js):
 
 ### Change log
 
+#### 1.7.8 (2025-10-16)
+*	Fixed an iteration issue appears in lower jQuery version.
+
 #### 1.7.7 (2025-01-14)
 *	[data-sum]... event now can work properly with no [data-max-length].
 *	[data-sum]... event now can work properly on non-input elements.
