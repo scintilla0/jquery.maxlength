@@ -1,5 +1,5 @@
 /*!
- * jquery.maxlength.js - version 1.7.8 - 2025-10-16
+ * jquery.maxlength.js - version 1.7.9 - 2025-11-10
  * @copyright (c) 2023-2025 scintilla0 (https://github.com/scintilla0)
  * @contributor: Squibler, ahotko
  * @license MIT License http://www.opensource.org/licenses/mit-license.html
@@ -484,7 +484,7 @@
 	}
 
 	function setValueWithMaxlengthCap(item, value) {
-		let maxlength = maxLengthBuffer[item.id];
+		let maxlength = getMaxLength(item);
 		if (!CommonUtil.exists(maxlength) && dataSetAbsent($(`[id="${item.id}"]`), CORE.MAX_LENGTH)) {
 			maxlength = DEFAULT_CANCEL_LENGTH;
 		}
